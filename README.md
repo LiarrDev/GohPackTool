@@ -1,10 +1,10 @@
 # GohPackTool
 
-Android 游戏客户端渠道打包脚本
+Android 游戏客户端渠道打包脚本 for GohSDK。
 
 ## Usage
 
-根据 channels 文件夹下的脚本按顺序传入各参数执行 Jar 命令即可
+根据 channels 文件夹下的脚本按顺序传入各参数执行 Jar 命令即可。
 
 ## Development
 
@@ -38,4 +38,4 @@ class GameXXX(apk: String) : Game(apk) {
 
 ### Utils
 
-工具合集，按需添加。用好 Kotlin 扩展函数。
+工具合集，按需添加。
