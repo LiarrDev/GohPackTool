@@ -8,7 +8,7 @@ import java.io.File
  * 目前可用渠道包括：原包、头条、UC、快手、爱奇艺、搜狗搜索
  */
 fun main(args: Array<String>) {
-    println("买量渠道打包任务开始...")
+    println("买量渠道打包任务开始...")        // TODO: 调整参数顺序
     val apk = args[0]
     val generatePath = args[1]
     val icon = args[2]
