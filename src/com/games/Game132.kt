@@ -5,7 +5,7 @@ package com.games
  * 彩虹物语KS
  */
 class Game132(apk: String) : Game123(apk) {
-    override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelName: String): Boolean {
-        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelName, "chwyKS")
+    override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelAbbr: String): Boolean {
+        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "chwyKS")
     }
 }

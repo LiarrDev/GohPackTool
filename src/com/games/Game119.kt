@@ -21,8 +21,8 @@ class Game119(apk: String) : Game(apk) {
         generatePath: String,
         gid: String,
         appVersion: String,
-        channelName: String
+        channelAbbr: String
     ): Boolean {
-        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelName, "nsmy")
+        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "nsmy")
     }
 }

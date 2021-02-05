@@ -8,70 +8,83 @@ import java.io.File
  * 目前可用渠道包括：原包、头条、UC、快手、爱奇艺、搜狗搜索
  */
 fun main(args: Array<String>) {
-    println("买量渠道打包任务开始...")        // TODO: 调整参数顺序
-    val apk = args[0]
-    val generatePath = args[1]
-    val icon = args[2]
-    val loginImg = args[3]
-    val logoImg = args[4]
-    val loadingImg = args[5]
-    val packageName = args[6]
-    val pkName = args[7]            // 副包名称
-    val pkid = args[8]
-    val channelAppId = args[9]
-    val channelTag = args[10]       // 后面去掉
-    val channelCode = args[11]      // 0：无，1：头条，2：UC，3：快手       // TODO: 其他渠道应该也要增加，但未增加
-    val appVersion = args[12]
-    val keyStorePath = args[13]
-    val apktool = args[14]
-    val sdkVersion = args[15]
-    val loginType = args[16]        // 0：无，1：微信，2：QQ，3：微信和 QQ
-    val qqAppId = args[17]
-    val wxAppId = args[18]
-    val thirdPartyBasePatch = args[19]
-    val wxApiPath = args[20]
-    val qqLoginPatch = args[21]
-    val wxLoginPatch = args[22]
-    val channelAppName = args[23]
-    val gid = args[24]
-    val splashImg = args[25]
-    val channelFile = args[26]
-    val appInfo = args[27]          // 是否获取手机应用列表，1：获取，0：不获取
-    val appName = args[28]
-    val channelName = args[29]
+    println("买量渠道打包任务开始...")
 
-    println("""
-        apk = $apk
-        generatePath = $generatePath
-        icon = $icon
-        loginImg = $loginImg
-        logoImg = $logoImg
-        loadingImg = $loadingImg
-        packageName = $packageName
-        pkName = $pkName
-        pkid = $pkid
-        channelAppId = $channelAppId
-        channelTag = $channelTag
-        channelCode = $channelCode
-        appVersion = $appVersion
-        keyStorePath = $keyStorePath
-        apktool = $apktool
-        sdkVersion = $sdkVersion
-        loginType = $loginType
-        qqAppId = $qqAppId
-        wxAppId = $wxAppId
-        thirdPartyBasePatch = $thirdPartyBasePatch
-        wxApiPath = $wxApiPath
-        qqLoginPatch = $qqLoginPatch
-        wxLoginPatch = $wxLoginPatch
-        channelAppName = $channelAppName
-        gid = $gid
-        splashImg = $splashImg
-        channelFile = $channelFile
-        appInfo = $appInfo
-        appName = $appName
-        channelName = $channelName
-    """.trimIndent())
+    val apk = args[0]                       // 母包 Apk 路径
+    val generatePath = args[1]              // 生成的 Apk 路径
+    val apktool = args[2]                   // ApkTool 路径
+    val keyStorePath = args[3]              // 签名路径
+
+    val gid = args[4]                       // 游戏 GID
+    val pkid = args[5]                      // 游戏 PKID
+    val pkName = args[6]                    // 副包名称
+    val packageName = args[7]               // 包名
+    val appName = args[8]                   // 应用名称，如果为空则使用副包名称
+    val appVersion = args[9]                // 应用版本号
+    val sdkVersion = args[10]               // SDK 版本号
+
+    val icon = args[11]                     // ICON 路径
+    val loginImg = args[12]                 // 登录背景图路径
+    val logoImg = args[13]                  // LOGO 路径
+    val loadingImg = args[14]               // 加载背景图路径
+    val splashImg = args[15]                // 闪屏路径
+
+    val channelAppId = args[16]             // 渠道 AppId
+    val channelTag = args[17]               // 渠道标记，0：无，1：头条，2：UC，3：快手       // TODO: 其他渠道应该也要增加，但未增加
+    val channelAppName = args[18]           // 渠道 AppName
+    val channelFile = args[19]              // 渠道注入文件路径
+    val channelAbbr = args[20]              // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
+    val packType = args[21]                 // 母包类型，和后台打包配置 ID 一致
+
+    val loginType = args[22]                // 三方登录类型，0：无，1：微信，2：QQ，3：微信和 QQ
+    val qqAppId = args[23]                  // QQ AppId
+    val wxAppId = args[24]                  // 微信 AppId
+    val thirdPartyBasePatch = args[25]      // 三方登录基础库
+    val wxApiPath = args[26]                // WxApi 路径
+    val qqLoginPatch = args[27]             // QQ 登录注入文件
+    val wxLoginPatch = args[28]             // 微信登录注入文件
+
+    println(
+        """
+            ═════════════════════════════════════════════════════════════════╗
+            
+            apk = $apk
+            generatePath = $generatePath
+            apktool = $apktool
+            keyStorePath = $keyStorePath
+            
+            gid = $gid
+            pkid = $pkid
+            pkName = $pkName
+            packageName = $packageName
+            appName = $appName
+            appVersion = $appVersion
+            sdkVersion = $sdkVersion
+            
+            icon = $icon
+            loginImg = $loginImg
+            logoImg = $logoImg
+            loadingImg = $loadingImg
+            splashImg = $splashImg
+            
+            channelAppId = $channelAppId
+            channelTag = $channelTag
+            channelAppName = $channelAppName
+            channelFile = $channelFile
+            channelAbbr = $channelAbbr
+            packType = $packType
+                    
+            loginType = $loginType
+            qqAppId = $qqAppId
+            wxAppId = $wxAppId
+            thirdPartyBasePatch = $thirdPartyBasePatch
+            wxApiPath = $wxApiPath
+            qqLoginPatch = $qqLoginPatch
+            wxLoginPatch = $wxLoginPatch
+            
+            ═════════════════════════════════════════════════════════════════╝
+    """.trimIndent()
+    )
 
     val game = when (gid) {
         "111" -> Game111(apk)
@@ -99,21 +112,30 @@ fun main(args: Array<String>) {
         it.decompile(generatePath + File.separator + "temp", apktool)
         it.replaceResource(loginImg, loadingImg, logoImg, splashImg)
         it.replaceIcon(icon)
-        it.setAppName(if (appName.isBlank()) {
-            pkName
-        } else {
-            appName
-        })
+        it.setAppName(
+            if (appName.isBlank()) {
+                pkName
+            } else {
+                appName
+            }
+        )
         it.setPackageName(packageName)
         it.gameConfig(sdkVersion, pkid)
         it.patchChannelFile(channelFile)
-        it.thirdPartyLogin(loginType, thirdPartyBasePatch, qqLoginPatch, qqAppId, wxApiPath, wxLoginPatch, wxAppId, packageName)
-        it.channelConfig(channelCode, channelAppId, channelAppName, channelName, appInfo)
-        it.setPackType(1)               // FIXME：增加参数
-        if (it.generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelName)) {
+        it.thirdPartyLogin(
+            loginType,
+            thirdPartyBasePatch,
+            qqLoginPatch,
+            qqAppId,
+            wxApiPath,
+            wxLoginPatch,
+            wxAppId,
+            packageName
+        )
+        it.channelConfig(channelTag, channelAppId, channelAppName)
+        it.setPackType(packType)
+        if (it.generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             it.deleteDecompileDir()
         }
     }
-
-
 }

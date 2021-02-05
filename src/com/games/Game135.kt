@@ -6,7 +6,7 @@ package com.games
  */
 class Game135(apk: String) : Game124(apk) {
 
-    override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelName: String): Boolean {
-        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelName, "dhlmcs1")
+    override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelAbbr: String): Boolean {
+        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "dhlmcs1")
     }
 }

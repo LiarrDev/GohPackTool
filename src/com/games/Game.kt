@@ -20,7 +20,6 @@ abstract class Game(private val apk: String) {
     private lateinit var pkgName: String
     private lateinit var pkid: String
     private var loginType = "0"
-    private var channelCode = "0"
 
     /**
      * 反编译
@@ -248,25 +247,23 @@ abstract class Game(private val apk: String) {
      * 渠道配置
      */
     open fun channelConfig(
-        channelCode: String,
+        channelTag: String,
         channelAppId: String,
         channelAppName: String,
-        channelName: String,
         appInfo: String = "0"
     ) {
-        this.channelCode = channelCode
         val map = HashMap<String, String>()
-        map["isReport"] = if ("0" == channelCode) "0" else "1"
-        if ("1" == channelCode) {                                   // 头条的 AppId 做加密处理
+        map["isReport"] = if ("0" == channelTag) "0" else "1"
+        if ("1" == channelTag) {                                    // 头条的 AppId 做加密处理
             map["appId"] = EncryptUtil.encryptAppId(channelAppId)
             map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
         } else {
             map["appId"] = channelAppId
         }
         map["appName"] = if (channelAppName.isEmpty()) gameName else channelAppName
-        map["channel"] = channelName
-        map["appinfo"] = if (appInfo == "1") "1" else "0"
-        map["issplash"] = "0"                                       // 代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
+        map["channel"] = ""                                         // 这个字段暂时没有渠道需要使用（某些渠道可选，但我们暂未使用）
+        map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本郑家
+        map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
 
         FileUtil.writePlatformProperties(
             File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"),
@@ -277,12 +274,12 @@ abstract class Game(private val apk: String) {
     /**
      * 设置 Pack Type，跟后台打包配置的母包类型 ID 对应
      */
-    open fun setPackType(packType: Int): Boolean {
+    open fun setPackType(packType: String): Boolean {
         return try {
             val file = File(decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml")
             val document = SAXReader().read(file)
             val element = document.rootElement.element("packtype")
-            element.text = packType.toString()
+            element.text = packType
             val writer = XMLWriter(FileWriter(file))
             writer.write(document)
             writer.close()
@@ -308,7 +305,7 @@ abstract class Game(private val apk: String) {
         generatePath: String,
         gid: String,
         appVersion: String,
-        channelName: String = "Undefine"
+        channelAbbr: String = "Undefine"
     ): Boolean
 
     /**
@@ -319,12 +316,12 @@ abstract class Game(private val apk: String) {
         generatePath: String,
         gid: String,
         appVersion: String,
-        channelName: String = "Undefine",
+        channelAbbr: String = "Undefine",
         gameName: String = "UNKNOWN"
     ): Boolean {
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"))
         val fileName =
-            "${gameName}_${pkgName.substring(pkgName.lastIndexOf(".") + 1)}_${gid}_${pkid}_${appVersion}_rongyao_${time}_${channelName}${loginType}.apk"
+            "${gameName}_${pkgName.substring(pkgName.lastIndexOf(".") + 1)}_${gid}_${pkid}_${appVersion}_rongyao_${time}_${channelAbbr}${loginType}.apk"
         val filePath = generatePath + File.separator + fileName
         println("文件路径：$filePath")
 
