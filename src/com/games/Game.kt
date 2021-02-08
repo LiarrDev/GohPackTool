@@ -183,18 +183,18 @@ abstract class Game(private val apk: String) {
     open fun patchChannelFile(patchFile: String) {
         if (patchFile.isBlank()) {
             println("$patchFile File path is empty")
-        } else {
-            val list = FileUtil.getDirectoryList(File(patchFile))
-            for (index in list.indices) {
-                when (list[index]) {
-                    "assets" -> File(patchFile, "assets").copyDir(File(decompileDir, "assets"))
-                    "smali" -> File(patchFile, "smali").copyDir(File(decompileDir, "smali"))
-                    "res" -> File(patchFile, "res").copyDir(File(decompileDir, "res"))
-                    "so" -> FileUtil.copySoLib(
-                        patchFile + File.separator + "so",
-                        decompileDir + File.separator + "lib"
-                    )
-                }
+            return
+        }
+        val list = FileUtil.getDirectoryList(File(patchFile))
+        for (index in list.indices) {
+            when (list[index]) {
+                "assets" -> File(patchFile, "assets").copyDir(File(decompileDir, "assets"))
+                "smali" -> File(patchFile, "smali").copyDir(File(decompileDir, "smali"))
+                "res" -> File(patchFile, "res").copyDir(File(decompileDir, "res"))
+                "so" -> FileUtil.copySoLib(
+                    patchFile + File.separator + "so",
+                    decompileDir + File.separator + "lib"
+                )
             }
         }
     }
@@ -261,7 +261,7 @@ abstract class Game(private val apk: String) {
             map["appId"] = channelAppId
         }
         map["appName"] = if (channelAppName.isEmpty()) gameName else channelAppName
-        map["channel"] = ""                                         // 这个字段暂时没有渠道需要使用（某些渠道可选，但我们暂未使用）
+        map["channel"] = "0"                                        // 这个字段暂时没有渠道需要使用（某些渠道可选，但我们暂未使用，头条渠道不能为空）
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本郑家
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
 
@@ -320,8 +320,9 @@ abstract class Game(private val apk: String) {
         gameName: String = "UNKNOWN"
     ): Boolean {
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"))
-        val fileName =
-            "${gameName}_${pkgName.substring(pkgName.lastIndexOf(".") + 1)}_${gid}_${pkid}_${appVersion}_rongyao_${time}_${channelAbbr}${loginType}.apk"
+        val fileName = "${gameName}_${
+            pkgName.substring(pkgName.lastIndexOf(".") + 1)     // 截取包名最后一段拼接，由于现参数混用，这种方法已无法标记到包，只能靠 pkid，后面可以考虑将 pkName 转拼音拼接
+        }_${gid}_${pkid}_${appVersion}_rongyao_${time}_${channelAbbr}${loginType}.apk"
         val filePath = generatePath + File.separator + fileName
         println("文件路径：$filePath")
 

@@ -3,15 +3,13 @@ package com.utils
 import org.w3c.dom.Document
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.nio.file.Files
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import com.sun.org.glassfish.external.amx.AMXUtil.prop
-import java.io.FileOutputStream
-
 
 object FileUtil {
 
@@ -187,10 +185,12 @@ fun File.replace(target: File) {
     if (isFile) {
         if (target.exists()) {
             FileUtil.delete(target)
+            println("${target.absolutePath} 已存在，先删除")
         }
         try {
             Files.copy(this.toPath(), target.toPath())
-        } catch (e: Exception) {    // 当 target 目录不存在时会抛异常，无需理会，因为不存在时不复制，需要复制时使用 File.copyDir() 扩展方法即可
+            println("${this.absolutePath}  -->  ${target.absolutePath}")
+        } catch (e: Exception) {    // 当 target 父目录不存在时会抛异常，无需理会，因为不存在时不复制，需要复制时使用 File.copyDir() 扩展方法即可
             e.printStackTrace()
             println("如果 ${target.absolutePath} 不存在，该错误无需理会")
         }
