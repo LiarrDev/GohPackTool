@@ -13,6 +13,9 @@ import javax.xml.transform.stream.StreamResult
 
 object FileUtil {
 
+    /**
+     * 删除文件或文件夹
+     */
     fun delete(file: File) {
         if (file.exists()) {
             if (file.isFile) {
@@ -31,6 +34,9 @@ object FileUtil {
         }
     }
 
+    /**
+     * 复制目录
+     */
     @Deprecated("已用扩展方法重写")
     fun copyDir(sourceDirPath: String, targetDirPath: String) {
         File(targetDirPath).mkdirs()        // 假如目标文件夹不存在则新建
@@ -39,17 +45,21 @@ object FileUtil {
         if (file.exists()) {
             println("文件夹存在：" + file.name)
         } else {
-            println("""
+            println(
+                """
                 文件夹不存在：${file.name}
                 SourcePath: $sourceDirPath
                 TargetPath: $targetDirPath
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
-        println("""
+        println(
+            """
             文件长度：${files?.size}
             SourcePath: $sourceDirPath
             TargetPath: $targetDirPath
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         if (files != null) {
             for (i in files.indices) {
@@ -102,9 +112,15 @@ object FileUtil {
         }
     }
 
+    /**
+     * 复制 wxapi 相关文件
+     */
     fun copyWeChatLoginFile(decompileDir: String, wxApiFile: File, packageName: String) {
         val tencentPackage = packageName.replace(Regex("\\pP"), "/")
-        val targetPath = decompileDir + File.separator + "smali" + File.separator + tencentPackage + File.separator + "wxapi" + File.separator
+        val targetPath = decompileDir + File.separator +
+                "smali" + File.separator +
+                tencentPackage + File.separator +
+                "wxapi" + File.separator
         wxApiFile.copyDir(File(targetPath))
 
         val activity = File(targetPath + "WXEntryActivity.smali")
@@ -116,6 +132,9 @@ object FileUtil {
         handler.writeText(handlerContent)
     }
 
+    /**
+     * 写入平台参数
+     */
     fun writePlatformProperties(propertiesFile: File, map: Map<String, String>): Boolean {
         return try {
             val properties = Properties()
@@ -136,6 +155,9 @@ object FileUtil {
         }
     }
 
+    /**
+     * 替换图片资源
+     */
     fun replaceResource(newImagePath: String?, oldImagePath: String): Boolean {
         return if (newImagePath.isNullOrBlank()) {
             println("文件不存在：$newImagePath")
@@ -179,7 +201,8 @@ fun Document.toFile(file: File): Boolean {
 }
 
 /**
- * 替换文件，Usage: File.replace(FileNeedToBeReplaced)
+ * 替换文件
+ * Usage: File.replace(FileNeedToBeReplaced)
  */
 fun File.replace(target: File) {
     if (isFile) {
@@ -198,6 +221,9 @@ fun File.replace(target: File) {
     }
 }
 
+/**
+ * 复制文件到指定目录
+ */
 fun File.copyDir(destDir: File) {
     val files = listFiles()
     if (files != null) {
