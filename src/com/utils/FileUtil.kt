@@ -22,10 +22,8 @@ object FileUtil {
                 file.delete()
             } else if (file.isDirectory) {
                 val files = file.listFiles()
-                if (files != null) {
-                    for (i in files.indices) {
-                        delete(files[i])
-                    }
+                files?.forEach { f ->
+                    delete(f)
                 }
             }
             file.delete()
@@ -37,7 +35,7 @@ object FileUtil {
     /**
      * 复制目录
      */
-    @Deprecated("已用扩展方法重写")
+    @Deprecated("已用扩展方法重写", ReplaceWith("File(sourceDirPath).copyDir(File(targetDirPath))"))
     fun copyDir(sourceDirPath: String, targetDirPath: String) {
         File(targetDirPath).mkdirs()        // 假如目标文件夹不存在则新建
         val file = File(sourceDirPath)
@@ -61,16 +59,13 @@ object FileUtil {
         """.trimIndent()
         )
 
-        if (files != null) {
-            for (i in files.indices) {
-                if (files[i].isFile) {
-                    val sourceFile = files[i]
-                    val targetFile = File(targetDirPath + File.separator + files[i].name)
-                    sourceFile.replace(targetFile)
-                } else if (files[i].isDirectory) {
-                    val dir = targetDirPath + File.separator + files[i].name
-                    copyDir(files[i].absolutePath, dir)
-                }
+        files?.forEach { f ->
+            if (f.isFile) {
+                val targetFile = File(targetDirPath + File.separator + f.name)
+                f.replace(targetFile)
+            } else if (f.isDirectory) {
+                val dir = targetDirPath + File.separator + f
+                copyDir(f.absolutePath, dir)
             }
         }
     }
@@ -81,11 +76,9 @@ object FileUtil {
     fun getDirectoryList(dir: File): List<String> {
         val files = dir.listFiles()
         val folders = mutableListOf<String>()
-        files?.let {
-            for (i in it.indices) {
-                if (it[i].isDirectory) {
-                    folders.add(it[i].name)
-                }
+        files?.forEach { f ->
+            if (f.isDirectory) {
+                folders.add(f.name)
             }
         }
         return folders
@@ -99,13 +92,11 @@ object FileUtil {
         val targetDir = File(targetDirPath)
         if (soFileDir.exists()) {
             val existList = targetDir.listFiles()
-            existList?.let {
-                for (i in it.indices) {
-                    if (it[i].isDirectory) {
-                        val existDir = File(soFileDirPath + File.separator + it[i].name)
-                        if (existDir.exists()) {
-                            existDir.copyDir(it[i])
-                        }
+            existList?.forEach { file ->
+                if (file.isDirectory) {
+                    val existDir = File(soFileDirPath + File.separator + file.name)
+                    if (existDir.exists()) {
+                        existDir.copyDir(file)
                     }
                 }
             }
@@ -140,7 +131,7 @@ object FileUtil {
             val properties = Properties()
             val fis = FileInputStream(propertiesFile)
             properties.load(fis)
-            for ((key, value) in map) {
+            map.forEach { (key, value) ->
                 println("Key = $key, Value = $value")
                 properties.setProperty(key, value)
             }
@@ -226,17 +217,14 @@ fun File.replace(target: File) {
  */
 fun File.copyDir(destDir: File) {
     val files = listFiles()
-    if (files != null) {
-        for (f in files) {
-            val file = File(destDir.absolutePath, f.name)
-            if (f.isFile) {
-                println("${f.absolutePath}  -->  ${file.absolutePath}")
-                f.replace(file)
-            } else {
-                file.mkdirs()
-                f.copyDir(file)
-            }
+    files?.forEach { f ->
+        val file = File(destDir.absolutePath, f.name)
+        if (f.isFile) {
+            println("${f.absolutePath}  -->  ${file.absolutePath}")
+            f.replace(file)
+        } else {
+            file.mkdirs()
+            f.copyDir(file)
         }
     }
-    return
 }

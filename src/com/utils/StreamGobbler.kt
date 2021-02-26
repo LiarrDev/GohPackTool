@@ -16,8 +16,8 @@ class StreamGobbler(
     override fun run() {
         try {
             var printWriter: PrintWriter? = null
-            if (outputStream != null) {
-                printWriter = PrintWriter(outputStream)
+            outputStream?.let {
+                printWriter = PrintWriter(it)
             }
             val inputStreamReader = InputStreamReader(inputStream)
             val bufferedReader = BufferedReader(inputStreamReader)

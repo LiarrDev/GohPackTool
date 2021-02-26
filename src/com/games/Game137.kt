@@ -11,9 +11,18 @@ import java.io.File
 class Game137(apk: String) : Game(apk) {
 
     override fun replaceResource(loginImage: String?, loadingImage: String?, logoImage: String?, splashImage: String?) {
-        val gameLoginImgPath = decompileDir + File.separator + "assets" + File.separator + "AgentAssets" + File.separator + "login_bg.png"
-        val gameLoadingImgPath = decompileDir + File.separator + "assets" + File.separator + "AgentAssets" + File.separator + "loading_bg.png"
-        val gameLogoImgPath = decompileDir + File.separator + "assets" + File.separator + "AgentAssets" + File.separator + "logo.png"
+        val gameLoginImgPath = decompileDir +
+                File.separator + "assets" +
+                File.separator + "AgentAssets" +
+                File.separator + "login_bg.png"
+        val gameLoadingImgPath = decompileDir +
+                File.separator + "assets" +
+                File.separator + "AgentAssets" +
+                File.separator + "loading_bg.png"
+        val gameLogoImgPath = decompileDir +
+                File.separator + "assets" +
+                File.separator + "AgentAssets" +
+                File.separator + "logo.png"
         val gameSplashImgPath = decompileDir + File.separator + "assets" + File.separator + "splash_image_0.png"
         FileUtil.replaceResource(loginImage, gameLoginImgPath)
         FileUtil.replaceResource(loadingImage, gameLoadingImgPath)
@@ -29,20 +38,27 @@ class Game137(apk: String) : Game(apk) {
             println("$patchFile File path is empty")
         } else {
             val list = FileUtil.getDirectoryList(File(patchFile))
-            for (index in list.indices) {
-                when (list[index]) {
+            list.forEach { dirName ->
+                when (dirName) {
                     "assets" -> File(patchFile, "assets").copyDir(File(decompileDir, "assets"))
                     "smali" -> File(patchFile, "smali").copyDir(File(decompileDir, "smali_classes2"))
                     "res" -> File(patchFile, "res").copyDir(File(decompileDir, "res"))
                     "so" -> FileUtil.copySoLib(
-                            patchFile + File.separator + "so",
-                            decompileDir + File.separator + "lib")
+                        patchFile + File.separator + "so",
+                        decompileDir + File.separator + "lib"
+                    )
                 }
             }
         }
     }
 
-    override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelAbbr: String): Boolean {
+    override fun generateSignedApk(
+        keyStorePath: String,
+        generatePath: String,
+        gid: String,
+        appVersion: String,
+        channelAbbr: String
+    ): Boolean {
         return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "xxsy")
     }
 }

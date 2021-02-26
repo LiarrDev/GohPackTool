@@ -7,7 +7,7 @@ import java.io.File
  * 普通买量渠道通用打包脚本
  * 目前可用渠道包括：原包、头条、UC、快手、爱奇艺、搜狗搜索
  */
-fun main(args: Array<String>) {
+fun main(vararg args: String) {
     println("买量渠道打包任务开始...")
 
     val apk = args[0]                       // 母包 Apk 路径
@@ -45,7 +45,7 @@ fun main(args: Array<String>) {
     val wxLoginPatch = args[28]             // 微信登录注入文件
 
     println(
-        """
+            """
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
@@ -108,34 +108,34 @@ fun main(args: Array<String>) {
         "141" -> Game141(apk)
         else -> null
     }
-    game?.let {
-        it.decompile(generatePath + File.separator + "temp", apktool)
-        it.replaceResource(loginImg, loadingImg, logoImg, splashImg)
-        it.replaceIcon(icon)
-        it.setAppName(
-            if (appName.isBlank()) {
-                pkName
-            } else {
-                appName
-            }
+    game?.apply {
+        decompile(generatePath + File.separator + "temp", apktool)
+        replaceResource(loginImg, loadingImg, logoImg, splashImg)
+        replaceIcon(icon)
+        setAppName(
+                if (appName.isBlank()) {
+                    pkName
+                } else {
+                    appName
+                }
         )
-        it.setPackageName(packageName)
-        it.gameConfig(sdkVersion, pkid)
-        it.patchChannelFile(channelFile)
-        it.thirdPartyLogin(
-            loginType,
-            thirdPartyBasePatch,
-            qqLoginPatch,
-            qqAppId,
-            wxApiPath,
-            wxLoginPatch,
-            wxAppId,
-            packageName
+        setPackageName(packageName)
+        gameConfig(sdkVersion, pkid)
+        patchChannelFile(channelFile)
+        thirdPartyLogin(
+                loginType,
+                thirdPartyBasePatch,
+                qqLoginPatch,
+                qqAppId,
+                wxApiPath,
+                wxLoginPatch,
+                wxAppId,
+                packageName
         )
-        it.channelConfig(channelTag, channelAppId, channelAppName)
-        it.setPackType(packType)
-        if (it.generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
-            it.deleteDecompileDir()
+        channelConfig(channelTag, channelAppId, channelAppName)
+        setPackType(packType)
+        if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
+            deleteDecompileDir()
         }
     }
 }

@@ -116,8 +116,8 @@ abstract class Game(private val apk: String) {
         val xml = decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "strings.xml"
         val document = File(xml).loadDocument()
         val element = document?.documentElement
-        element?.let {
-            if (it.hasChildNodes()) {
+        element?.apply {
+            if (hasChildNodes()) {
                 val nodes = document.getElementsByTagName("string")
                 for (i in 0 until nodes.length) {
                     val node = nodes.item(i)
@@ -162,11 +162,10 @@ abstract class Game(private val apk: String) {
         val xml = decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml"
         val document = File(xml).loadDocument()
         val element = document?.documentElement
-        element?.let {
-            if (it.hasChildNodes()) {
-                val nodes = it.childNodes
-                for (i in 0 until nodes.length) {
-                    val node = nodes.item(i)
+        element?.apply {
+            if (hasChildNodes()) {
+                for (i in 0 until childNodes.length) {
+                    val node = childNodes.item(i)
                     when (node.nodeName) {
                         "kpid", "pkid" -> node.firstChild.nodeValue = pkid
                         "version" -> node.firstChild.nodeValue = sdkVersion
@@ -186,8 +185,8 @@ abstract class Game(private val apk: String) {
             return
         }
         val list = FileUtil.getDirectoryList(File(patchFile))
-        for (index in list.indices) {
-            when (list[index]) {
+        list.forEach { dirName ->
+            when (dirName) {
                 "assets" -> File(patchFile, "assets").copyDir(File(decompileDir, "assets"))
                 "smali" -> File(patchFile, "smali").copyDir(File(decompileDir, "smali"))
                 "res" -> File(patchFile, "res").copyDir(File(decompileDir, "res"))
