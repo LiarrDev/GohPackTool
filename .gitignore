@@ -28,4 +28,7 @@ vcs.xml
 # Generated files
 out/
 
+#META
+META-INF/
+
 .DS_Store

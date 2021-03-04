@@ -1,7 +1,8 @@
 package com.games
 
 import com.utils.FileUtil
-import com.utils.copyDir
+import com.utils.copyDirTo
+import com.utils.getDirectoryList
 import java.io.File
 
 /**
@@ -37,12 +38,11 @@ class Game137(apk: String) : Game(apk) {
         if (patchFile.isBlank()) {
             println("$patchFile File path is empty")
         } else {
-            val list = FileUtil.getDirectoryList(File(patchFile))
-            list.forEach { dirName ->
-                when (dirName) {
-                    "assets" -> File(patchFile, "assets").copyDir(File(decompileDir, "assets"))
-                    "smali" -> File(patchFile, "smali").copyDir(File(decompileDir, "smali_classes2"))
-                    "res" -> File(patchFile, "res").copyDir(File(decompileDir, "res"))
+            File(patchFile).getDirectoryList().forEach { dirName ->
+                when (dirName.name) {
+                    "assets" -> File(patchFile, "assets").copyDirTo(File(decompileDir, "assets"))
+                    "smali" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali_classes2"))
+                    "res" -> File(patchFile, "res").copyDirTo(File(decompileDir, "res"))
                     "so" -> FileUtil.copySoLib(
                         patchFile + File.separator + "so",
                         decompileDir + File.separator + "lib"

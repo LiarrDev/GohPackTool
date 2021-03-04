@@ -43,16 +43,14 @@ object FileUtil {
         if (file.exists()) {
             println("文件夹存在：" + file.name)
         } else {
-            println(
-                """
+            println("""
                 文件夹不存在：${file.name}
                 SourcePath: $sourceDirPath
                 TargetPath: $targetDirPath
             """.trimIndent()
             )
         }
-        println(
-            """
+        println("""
             文件长度：${files?.size}
             SourcePath: $sourceDirPath
             TargetPath: $targetDirPath
@@ -71,32 +69,16 @@ object FileUtil {
     }
 
     /**
-     * 获取目录中的文件夹列表
-     */
-    fun getDirectoryList(dir: File): List<String> {
-        val files = dir.listFiles()
-        val folders = mutableListOf<String>()
-        files?.forEach { f ->
-            if (f.isDirectory) {
-                folders.add(f.name)
-            }
-        }
-        return folders
-    }
-
-    /**
      * so 库的复制，仅复制到已有的文件夹
      */
     fun copySoLib(soFileDirPath: String, targetDirPath: String) {
         val soFileDir = File(soFileDirPath)
         val targetDir = File(targetDirPath)
         if (soFileDir.exists()) {
-            val existList = targetDir.listFiles()
-            existList?.forEach { file ->
-                if (file.isDirectory) {
-                    val existDir = File(soFileDirPath + File.separator + file.name)
-                    if (existDir.exists()) {
-                        existDir.copyDir(file)
+            targetDir.getDirectoryList().forEach { dir ->
+                File(soFileDirPath, dir.name).apply {
+                    if (exists()) {
+                        copyDirTo(dir)
                     }
                 }
             }
@@ -112,7 +94,7 @@ object FileUtil {
                 "smali" + File.separator +
                 tencentPackage + File.separator +
                 "wxapi" + File.separator
-        wxApiFile.copyDir(File(targetPath))
+        wxApiFile.copyDirTo(File(targetPath))
 
         val activity = File(targetPath + "WXEntryActivity.smali")
         val activityContent = activity.readText().replace("com/tencent/tmgp/njxx2/wxapi", "$tencentPackage/wxapi")
@@ -215,7 +197,7 @@ fun File.replace(target: File) {
 /**
  * 复制文件到指定目录
  */
-fun File.copyDir(destDir: File) {
+fun File.copyDirTo(destDir: File) {
     val files = listFiles()
     files?.forEach { f ->
         val file = File(destDir.absolutePath, f.name)
@@ -224,7 +206,20 @@ fun File.copyDir(destDir: File) {
             f.replace(file)
         } else {
             file.mkdirs()
-            f.copyDir(file)
+            f.copyDirTo(file)
         }
     }
+}
+
+/**
+ * 获取目录中的文件夹列表
+ */
+fun File.getDirectoryList(): List<File> {
+    val folders = mutableListOf<File>()
+    listFiles()?.forEach { f ->
+        if (f.isDirectory) {
+            folders.add(f)
+        }
+    }
+    return folders
 }

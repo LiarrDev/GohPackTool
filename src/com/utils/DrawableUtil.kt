@@ -14,8 +14,7 @@ object DrawableUtil {
         icon.replace(File(drawable))
 
         val drawableV4 = decompileDir + File.separator + "res" + File.separator + "drawable-" + sizeTag + "-v4"
-        val f = File(drawableV4)
-        if (f.exists()) {
+        if (File(drawableV4).exists()) {
             icon.replace(File(drawableV4 + File.separator + iconName))
         }
     }
@@ -43,5 +42,20 @@ object DrawableUtil {
             e.printStackTrace()
         }
         return null
+    }
+
+    /**
+     * 替换主体 LOGO 资源
+     */
+    fun replaceCoDrawable(decompileDir: String, coDrawableDir: String) {
+        File(coDrawableDir).getDirectoryList().forEach { dir ->
+            when (dir.name) {
+                "drawable-hdpi", "drawable-xhdpi", "drawable-xxhdpi" -> {
+                    val destDir = File(decompileDir + File.separator + "res" + File.separator + dir.name)
+                    dir.copyDirTo(destDir)
+                    println("--> ${dir.name} 素材替换完成")
+                }
+            }
+        }
     }
 }

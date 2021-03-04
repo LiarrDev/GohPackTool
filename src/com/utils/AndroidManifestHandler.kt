@@ -63,9 +63,9 @@ object AndroidManifestHandler {
      * 方法：直接替换尾标签 </application>
      */
     fun addApplicationConfig(decompileDir: String, content: String) {
-        val xml = decompileDir + File.separator + "AndroidManifest.xml"
-        var manifest = File(xml).readText()
+        val file = File(decompileDir + File.separator + "AndroidManifest.xml")
+        var manifest = file.readText()
         manifest = manifest.replace("</application>", "$content</application>")
-        File(xml).writeText(manifest)
+        file.writeText(manifest)
     }
 }

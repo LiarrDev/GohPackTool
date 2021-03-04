@@ -68,10 +68,10 @@ abstract class Game(private val apk: String) {
 
             // xxhdpi 和 drawable
             val xxhdpiImage: File? = DrawableUtil.resizeImage(
-                icon,
-                144,
-                144,
-                decompileDir + File.separator + "temp_icon" + File.separator + "xx"
+                    icon,
+                    144,
+                    144,
+                    decompileDir + File.separator + "temp_icon" + File.separator + "xx"
             )
             xxhdpiImage?.let {
                 DrawableUtil.replaceIcon(decompileDir, it, "xxhdpi", iconName)
@@ -80,20 +80,20 @@ abstract class Game(private val apk: String) {
 
             // xhdpi
             val xhdpiImage: File? = DrawableUtil.resizeImage(
-                icon,
-                96,
-                96,
-                decompileDir + File.separator + "temp_icon" + File.separator + "xx"
+                    icon,
+                    96,
+                    96,
+                    decompileDir + File.separator + "temp_icon" + File.separator + "xx"
             )
             xhdpiImage?.let {
                 DrawableUtil.replaceIcon(decompileDir, it, "xhdpi", iconName)
             }
 
             val lowDpiImage: File? = DrawableUtil.resizeImage(
-                icon,
-                72,
-                72,
-                decompileDir + File.separator + "temp_icon" + File.separator + "xx"
+                    icon,
+                    72,
+                    72,
+                    decompileDir + File.separator + "temp_icon" + File.separator + "xx"
             )
             lowDpiImage?.let {
                 DrawableUtil.replaceIcon(decompileDir, it, "hdpi", iconName)
@@ -184,15 +184,14 @@ abstract class Game(private val apk: String) {
             println("$patchFile File path is empty")
             return
         }
-        val list = FileUtil.getDirectoryList(File(patchFile))
-        list.forEach { dirName ->
-            when (dirName) {
-                "assets" -> File(patchFile, "assets").copyDir(File(decompileDir, "assets"))
-                "smali" -> File(patchFile, "smali").copyDir(File(decompileDir, "smali"))
-                "res" -> File(patchFile, "res").copyDir(File(decompileDir, "res"))
+        File(patchFile).getDirectoryList().forEach { dirName ->
+            when (dirName.name) {
+                "assets" -> File(patchFile, "assets").copyDirTo(File(decompileDir, "assets"))
+                "smali" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali"))
+                "res" -> File(patchFile, "res").copyDirTo(File(decompileDir, "res"))
                 "so" -> FileUtil.copySoLib(
-                    patchFile + File.separator + "so",
-                    decompileDir + File.separator + "lib"
+                        patchFile + File.separator + "so",
+                        decompileDir + File.separator + "lib"
                 )
             }
         }
@@ -202,14 +201,14 @@ abstract class Game(private val apk: String) {
      * 第三方登录
      */
     fun thirdPartyLogin(
-        loginType: String?,
-        thirdPartyBasePatch: String,
-        qqLoginPatch: String,
-        qqAppId: String,
-        wxApiPath: String,
-        wxLoginPatch: String,
-        weChatAppId: String,
-        packageName: String
+            loginType: String?,
+            thirdPartyBasePatch: String,
+            qqLoginPatch: String,
+            qqAppId: String,
+            wxApiPath: String,
+            wxLoginPatch: String,
+            weChatAppId: String,
+            packageName: String
     ) {
         val open = (loginType != null && loginType.isNotBlank() && "0" != loginType)
         if (open) {
@@ -219,24 +218,24 @@ abstract class Game(private val apk: String) {
             val targetSmali = decompileDir + File.separator + "smali"
             val targetMSDK = targetSmali + File.separator + "com" + File.separator + "mayisdk" + File.separator + "msdk"
             val targetSdk = targetMSDK + File.separator + "api" + File.separator + "sdk"
-            sourceSdk.copyDir(File(targetSdk))
-            sourceMSDK.copyDir(File(targetMSDK))
+            sourceSdk.copyDirTo(File(targetSdk))
+            sourceMSDK.copyDirTo(File(targetMSDK))
             val manifest =
-                AndroidManifestHandler.getThirdPartyLoginManifest(loginType, qqAppId, weChatAppId, packageName)
+                    AndroidManifestHandler.getThirdPartyLoginManifest(loginType, qqAppId, weChatAppId, packageName)
             AndroidManifestHandler.addApplicationConfig(decompileDir, manifest)
 
             when (loginType) {
                 "1" -> {
                     FileUtil.copyWeChatLoginFile(decompileDir, File(wxApiPath), packageName)
-                    File(wxLoginPatch).copyDir(File(targetSmali))
+                    File(wxLoginPatch).copyDirTo(File(targetSmali))
                 }
                 "2" -> {
-                    File(qqLoginPatch).copyDir(File(targetSmali))
+                    File(qqLoginPatch).copyDirTo(File(targetSmali))
                 }
                 "3" -> {
                     FileUtil.copyWeChatLoginFile(decompileDir, File(wxApiPath), packageName)
-                    File(wxLoginPatch).copyDir(File(targetSmali))
-                    File(qqLoginPatch).copyDir(File(targetSmali))
+                    File(wxLoginPatch).copyDirTo(File(targetSmali))
+                    File(qqLoginPatch).copyDirTo(File(targetSmali))
                 }
             }
         }
@@ -246,10 +245,10 @@ abstract class Game(private val apk: String) {
      * 渠道配置
      */
     open fun channelConfig(
-        channelTag: String,
-        channelAppId: String,
-        channelAppName: String,
-        appInfo: String = "0"
+            channelTag: String,
+            channelAppId: String,
+            channelAppName: String,
+            appInfo: String = "0"
     ) {
         val map = HashMap<String, String>()
         map["isReport"] = if ("0" == channelTag) "0" else "1"
@@ -265,8 +264,8 @@ abstract class Game(private val apk: String) {
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
 
         FileUtil.writePlatformProperties(
-            File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"),
-            map
+                File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"),
+                map
         )
     }
 
@@ -300,23 +299,23 @@ abstract class Game(private val apk: String) {
      * 生成最终渠道包，子类重写调用同名方法传入 GameName
      */
     abstract fun generateSignedApk(
-        keyStorePath: String,
-        generatePath: String,
-        gid: String,
-        appVersion: String,
-        channelAbbr: String = "Undefine"
+            keyStorePath: String,
+            generatePath: String,
+            gid: String,
+            appVersion: String,
+            channelAbbr: String = "Undefine"
     ): Boolean
 
     /**
      * 生成最终渠道包，该方法必须在子类传入 GameName
      */
     protected fun generateSignedApk(
-        keyStorePath: String,
-        generatePath: String,
-        gid: String,
-        appVersion: String,
-        channelAbbr: String = "Undefine",
-        gameName: String = "UNKNOWN"
+            keyStorePath: String,
+            generatePath: String,
+            gid: String,
+            appVersion: String,
+            channelAbbr: String = "Undefine",
+            gameName: String = "UNKNOWN"
     ): Boolean {
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"))
         val fileName = "${gameName}_${
@@ -335,8 +334,7 @@ abstract class Game(private val apk: String) {
                 val storePassword = "ry201901"
                 val keyPassword = "ry201901"
                 val keyAlias = "rongyao"
-                val signCommand =
-                    "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $filePath $unsignedApk $keyAlias"
+                val signCommand = "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $filePath $unsignedApk $keyAlias"
                 if (CommandUtil.exec(signCommand)) {
                     println("##-------------------打包结果---------------------##")
                     println("##------------打包成功：------------------------##")
