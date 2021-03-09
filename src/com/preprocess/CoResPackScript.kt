@@ -39,8 +39,7 @@ fun main(vararg args: String) {
 
     // 设置主体类型
     PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
-            .load()
-            .setProperty("registerType", coType)        // FIXME: 检查有没有修改成功
+            .setProperties(mapOf("registerType" to coType))
 
     SmaliHandler.setUrlCoPrefix(decompileDir, urlCoPrefix, defaultCoType)
     SmaliHandler.setRegisterAccountPrefix(decompileDir, urlCoPrefix, defaultCoType)
