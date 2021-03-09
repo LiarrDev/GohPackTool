@@ -184,13 +184,11 @@ abstract class Game(private val apk: String) {
             println("$patchFile File path is empty")
             return
         }
-        File(patchFile).getDirectoryList().forEach { dirName ->
-            when (dirName.name) {
-                "assets" -> File(patchFile, "assets").copyDirTo(File(decompileDir, "assets"))
-                "smali" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali"))
-                "res" -> File(patchFile, "res").copyDirTo(File(decompileDir, "res"))
-                "so" -> FileUtil.copySoLib(
-                        patchFile + File.separator + "so",
+        File(patchFile).getDirectoryList().forEach { dir ->
+            when (dir.name) {
+                "assets", "smali", "res" -> File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
+                "so", "jni" -> FileUtil.copySoLib(     // FIXME: 有些渠道对该文件夹命名不一，后面要统一
+                        patchFile + File.separator + dir.name,
                         decompileDir + File.separator + "lib"
                 )
             }
@@ -244,7 +242,7 @@ abstract class Game(private val apk: String) {
     /**
      * 渠道配置
      */
-    open fun channelConfig(
+    fun channelConfig(
             channelTag: String,
             channelAppId: String,
             channelAppName: String,
@@ -258,7 +256,7 @@ abstract class Game(private val apk: String) {
         } else {
             map["appId"] = channelAppId
         }
-        map["appName"] = if (channelAppName.isEmpty()) gameName else channelAppName
+        map["appName"] = if (channelAppName.isBlank()) gameName else channelAppName
         map["channel"] = "0"                                        // 这个字段暂时没有渠道需要使用（某些渠道可选，但我们暂未使用，头条渠道不能为空）
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本郑家
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关

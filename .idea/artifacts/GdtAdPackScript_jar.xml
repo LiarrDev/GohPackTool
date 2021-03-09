@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="CoResPackScript:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/CoResPackScript_jar</output-path>
+  <artifact type="jar" name="GdtAdPackScript:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GdtAdPackScript_jar</output-path>
     <root id="archive" name="GohPackTool.jar">
       <element id="module-output" name="GohPackTool" />
       <element id="extracted-dir" path="$KOTLIN_BUNDLED$/lib/kotlin-stdlib.jar" path-in-jar="/" />

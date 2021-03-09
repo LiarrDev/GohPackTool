@@ -38,11 +38,10 @@ class Game137(apk: String) : Game(apk) {
         if (patchFile.isBlank()) {
             println("$patchFile File path is empty")
         } else {
-            File(patchFile).getDirectoryList().forEach { dirName ->
-                when (dirName.name) {
-                    "assets" -> File(patchFile, "assets").copyDirTo(File(decompileDir, "assets"))
+            File(patchFile).getDirectoryList().forEach { dir ->
+                when (dir.name) {
+                    "assets","res"->File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
                     "smali" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali_classes2"))
-                    "res" -> File(patchFile, "res").copyDirTo(File(decompileDir, "res"))
                     "so" -> FileUtil.copySoLib(
                         patchFile + File.separator + "so",
                         decompileDir + File.separator + "lib"
