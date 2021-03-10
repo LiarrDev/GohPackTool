@@ -156,8 +156,11 @@ abstract class Game(private val apk: String) {
 
     /**
      * 修改游戏配置 ZSinfo.xml
+     * @param sdkVersion SDK 版本号
+     * @param pkid 副包 ID，配置文件里 kpid 和 pkid 都要改，kpid 是老名字，后面废弃
+     * @param unionPlatform 联运平台类型，默认买量是 1，其他联运根据后台设定
      */
-    fun gameConfig(sdkVersion: String, pkid: String) {
+    fun gameConfig(sdkVersion: String, pkid: String, unionPlatform: String = "1") {
         this.pkid = pkid
         val xml = decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml"
         val document = File(xml).loadDocument()
@@ -166,9 +169,10 @@ abstract class Game(private val apk: String) {
             if (hasChildNodes()) {
                 for (i in 0 until childNodes.length) {
                     val node = childNodes.item(i)
-                    when (node.nodeName) {
+                    when (node.nodeName) {  // FIXME: firstChild 是否有必要
                         "kpid", "pkid" -> node.firstChild.nodeValue = pkid
                         "version" -> node.firstChild.nodeValue = sdkVersion
+                        "platform" -> node.nodeValue = unionPlatform
                     }
                 }
             }
@@ -197,6 +201,7 @@ abstract class Game(private val apk: String) {
 
     /**
      * 第三方登录
+     * 普通买量渠道接入，联运渠道不可使用
      */
     fun thirdPartyLogin(
             loginType: String?,
@@ -218,8 +223,7 @@ abstract class Game(private val apk: String) {
             val targetSdk = targetMSDK + File.separator + "api" + File.separator + "sdk"
             sourceSdk.copyDirTo(File(targetSdk))
             sourceMSDK.copyDirTo(File(targetMSDK))
-            val manifest =
-                    AndroidManifestHandler.getThirdPartyLoginManifest(loginType, qqAppId, weChatAppId, packageName)
+            val manifest = AndroidManifestHandler.getThirdPartyLoginManifest(loginType, qqAppId, weChatAppId, packageName)
             AndroidManifestHandler.addApplicationConfig(decompileDir, manifest)
 
             when (loginType) {
@@ -261,6 +265,7 @@ abstract class Game(private val apk: String) {
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本郑家
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
 
+        // TODO: 改用 PropertiesUtil
         FileUtil.writePlatformProperties(
                 File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"),
                 map

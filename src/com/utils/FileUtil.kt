@@ -106,6 +106,19 @@ object FileUtil {
     }
 
     /**
+     * YSDK 专用的复制 wxapi/WXEntryActivity 的方法，其他渠道勿用
+     * 由于 YSDK 注入可能会使方法超限，所以这里也做分 Dex 处理
+     */
+    fun copyYsdkWxEntry(decompileDir: String, wxApiFile: File, packageName: String) {
+        val tencentPackage = packageName.replace(Regex("\\pP"), "/")
+        val targetPath = decompileDir + File.separator + "smali_classes2" + File.separator + tencentPackage + File.separator + "wxapi"
+        wxApiFile.copyDirTo(File(targetPath))
+        val activity = File(targetPath, "WXEntryActivity.smali")
+        val content = activity.readText().replace("com/tencent/tmgp/qyj2/qyz/wxapi", "$tencentPackage/wxapi")
+        activity.writeText(content)
+    }
+
+    /**
      * 写入平台参数
      */
     fun writePlatformProperties(propertiesFile: File, map: Map<String, String>): Boolean {

@@ -6,6 +6,8 @@ import java.io.File
 /**
  * GID: 139
  * 山海异兽H5
+ *
+ * FIXME：该游戏在打应用宝 YSDK 联运渠道时会方法超限，可 OkHttp 库到 smali_classes2，重写 patchChannelFile() 方法在 super() 之后移动即可
  */
 class Game139(apk: String) : Game(apk) {
 
@@ -28,5 +30,21 @@ class Game139(apk: String) : Game(apk) {
 
     override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelAbbr: String): Boolean {
         return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "shysH5")
+    }
+
+    /**
+     * 打入某些联运渠道后会提示方法超限，所以要做分 Dex 处理
+     * TODO: 待测试
+     */
+    override fun patchChannelFile(patchFile: String) {
+        super.patchChannelFile(patchFile)
+        val smaliClasses2 = File(decompileDir, "smali_classes2")
+        val okHttp3 = File(decompileDir + File.separator + "smali" + File.separator + "okhttp3")
+        if (!smaliClasses2.exists()) {
+            smaliClasses2.mkdirs()
+            println("避免方法超限，创建 smali_classes2")
+        }
+        okHttp3.renameTo(File(smaliClasses2, "okhttp3"))
+        println("移动三方库到 smali_classes2")
     }
 }
