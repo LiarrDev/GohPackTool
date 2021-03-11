@@ -31,9 +31,9 @@ fun main(vararg args: String) {
     val splashImg = args[15]                // 闪屏路径
 
     val packType = args[16]                 // 母包类型，和后台打包配置 ID 一致
-    val channelAppId = args[16]             // 小米 AppId
-    val channelAppKey = args[17]            // 小米 AppKey
-    val channelFile = args[18]              // 渠道注入文件路径
+    val channelAppId = args[17]             // 小米 AppId
+    val channelAppKey = args[18]            // 小米 AppKey
+    val channelFile = args[19]              // 渠道注入文件路径
     val channelTag = "8"                    // 渠道标记，8：小米
     val channelAbbr = "Mi"                  // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
 

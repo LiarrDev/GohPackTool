@@ -215,8 +215,8 @@ abstract class Game(private val apk: String) {
         val open = (loginType != null && loginType.isNotBlank() && "0" != loginType)
         if (open) {
             this.loginType = loginType!!
-            val sourceSdk = File(thirdPartyBasePatch + File.separator + "sdk")
-            val sourceMSDK = File(thirdPartyBasePatch + File.separator + "msdk")
+            val sourceSdk = File(thirdPartyBasePatch, "sdk")
+            val sourceMSDK = File(thirdPartyBasePatch, "msdk")
             val targetSmali = decompileDir + File.separator + "smali"
             val targetMSDK = targetSmali + File.separator + "com" + File.separator + "mayisdk" + File.separator + "msdk"
             val targetSdk = targetMSDK + File.separator + "api" + File.separator + "sdk"
