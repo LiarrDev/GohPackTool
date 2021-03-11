@@ -40,11 +40,11 @@ class Game137(apk: String) : Game(apk) {
         } else {
             File(patchFile).getDirectoryList().forEach { dir ->
                 when (dir.name) {
-                    "assets","res"->File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
-                    "smali" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali_classes2"))
+                    "assets", "res" -> File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
+                    "smali", "smali_classes2" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali_classes2"))
                     "so" -> FileUtil.copySoLib(
-                        patchFile + File.separator + "so",
-                        decompileDir + File.separator + "lib"
+                            patchFile + File.separator + "so",
+                            decompileDir + File.separator + "lib"
                     )
                 }
             }
@@ -52,11 +52,11 @@ class Game137(apk: String) : Game(apk) {
     }
 
     override fun generateSignedApk(
-        keyStorePath: String,
-        generatePath: String,
-        gid: String,
-        appVersion: String,
-        channelAbbr: String
+            keyStorePath: String,
+            generatePath: String,
+            gid: String,
+            appVersion: String,
+            channelAbbr: String
     ): Boolean {
         return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "xxsy")
     }

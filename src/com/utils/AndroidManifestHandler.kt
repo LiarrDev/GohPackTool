@@ -1,11 +1,10 @@
 package com.utils
 
-import org.dom4j.Element
 import org.dom4j.io.SAXReader
 import org.dom4j.io.XMLWriter
 import java.io.File
-import java.util.regex.Pattern
 import java.io.FileWriter
+import java.util.regex.Pattern
 
 
 object AndroidManifestHandler {
@@ -185,5 +184,99 @@ object AndroidManifestHandler {
         val writer = XMLWriter(FileWriter(file))
         writer.write(document)
         writer.close()
+    }
+
+    fun setMiManifest(decompileDir: String, packageName: String) {
+        val content = """
+                <meta-data
+                    android:name="MiLinkGroupAppID"
+                    android:value="@integer/MiLinkGroupAppID" />
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.ui.MiActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.ui.PayListActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:exported="true"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+                <activity
+                    android:name="com.xiaomi.hy.dj.HyDjActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:exported="true"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+                <activity
+                    android:name="com.alipay.sdk.app.H5PayActivity"
+                    android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+                    android:exported="false"
+                    android:screenOrientation="behind"
+                    android:windowSoftInputMode="adjustResize|stateHidden" />
+                <service
+                    android:name="com.xiaomi.gamecenter.push.GamePushService"
+                    android:exported="true">
+                    <intent-filter>
+                        <action android:name="$packageName.MI_GAME_PUSH" />
+                    </intent-filter>
+                </service>
+                <receiver
+                    android:name="com.xiaomi.gamecenter.push.OnClickReceiver"
+                    android:exported="true">
+                    <intent-filter>
+                        <action android:name="com.xiaomi.hy.push.client.ONCLICK" />
+                    </intent-filter>
+                </receiver>
+                <provider
+                    android:name="com.xiaomi.gamecenter.sdk.utils.MiFileProvider"
+                    android:authorities="$packageName.mi_fileprovider"
+                    android:exported="false"
+                    android:grantUriPermissions="true">
+                    <meta-data
+                        android:name="android.support.FILE_PROVIDER_PATHS"
+                        android:resource="@xml/mio_file_paths" />
+                </provider>
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.ui.fault.ViewFaultNoticeActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:excludeFromRecents="true"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.ui.notice.NoticeActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:excludeFromRecents="true"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.anti.ui.MiAntiAlertActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:excludeFromRecents="true"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar">
+                    <intent-filter>
+                        <data
+                            android:host="open_anti_alert"
+                            android:scheme="mioauthsdk" />
+                        <category android:name="android.intent.category.DEFAULT" />
+                        <action android:name="android.intent.action.VIEW" />
+                    </intent-filter>
+                </activity>
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.ui.MiPayAntiActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+                <activity
+                    android:name="com.xiaomi.gamecenter.sdk.ui.MiVerifyActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            </application>
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="com.xiaomi.sdk.permission.PAYMENT" />
+            <uses-permission android:name="com.xiaomi.permission.AUTH_SERVICE" />
+            <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+        """.trimIndent()
+        addApplicationConfig(decompileDir, content)
     }
 }

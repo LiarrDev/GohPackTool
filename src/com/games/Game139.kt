@@ -6,8 +6,6 @@ import java.io.File
 /**
  * GID: 139
  * 山海异兽H5
- *
- * FIXME：该游戏在打应用宝 YSDK 联运渠道时会方法超限，可 OkHttp 库到 smali_classes2，重写 patchChannelFile() 方法在 super() 之后移动即可
  */
 class Game139(apk: String) : Game(apk) {
 

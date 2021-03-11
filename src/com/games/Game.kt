@@ -162,22 +162,21 @@ abstract class Game(private val apk: String) {
      */
     fun gameConfig(sdkVersion: String, pkid: String, unionPlatform: String = "1") {
         this.pkid = pkid
-        val xml = decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml"
-        val document = File(xml).loadDocument()
-        val element = document?.documentElement
-        element?.apply {
+        val file = File(decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml")
+        val document = file.loadDocument()
+        document?.documentElement?.apply {
             if (hasChildNodes()) {
                 for (i in 0 until childNodes.length) {
                     val node = childNodes.item(i)
-                    when (node.nodeName) {  // FIXME: firstChild 是否有必要
+                    when (node.nodeName) {
                         "kpid", "pkid" -> node.firstChild.nodeValue = pkid
                         "version" -> node.firstChild.nodeValue = sdkVersion
-                        "platform" -> node.nodeValue = unionPlatform
+                        "platform" -> node.firstChild.nodeValue = unionPlatform
                     }
                 }
             }
         }
-        document?.toFile(File(xml))
+        document?.toFile(file)
     }
 
     /**
@@ -190,7 +189,7 @@ abstract class Game(private val apk: String) {
         }
         File(patchFile).getDirectoryList().forEach { dir ->
             when (dir.name) {
-                "assets", "smali", "res" -> File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
+                "assets", "smali", "smali_classes2", "res" -> File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
                 "so", "jni" -> FileUtil.copySoLib(     // FIXME: 有些渠道对该文件夹命名不一，后面要统一
                         patchFile + File.separator + dir.name,
                         decompileDir + File.separator + "lib"

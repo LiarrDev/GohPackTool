@@ -121,6 +121,7 @@ object FileUtil {
     /**
      * 写入平台参数
      */
+    @Deprecated("由 PropertiesUtil 提供支持", ReplaceWith("PropertiesUtil(propertiesFile).setProperties(map)"))
     fun writePlatformProperties(propertiesFile: File, map: Map<String, String>): Boolean {
         return try {
             val properties = Properties()
