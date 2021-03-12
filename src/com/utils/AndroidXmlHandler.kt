@@ -4,11 +4,30 @@ import org.dom4j.io.SAXReader
 import org.dom4j.io.XMLWriter
 import java.io.File
 import java.io.FileWriter
+import java.util.*
 import java.util.regex.Pattern
 
 
-object AndroidManifestHandler {
+object AndroidXmlHandler {
 
+    /**
+     * 替换尾标签
+     * @param xml 需要修改的 XML 文件
+     * @param endTag 尾标签
+     * @param replaceWith 替换的内容
+     */
+    private fun replaceXmlEndTag(xml: File, endTag: String, replaceWith: String) {
+        if (!endTag.startsWith("</") && !endTag.endsWith(">")) {
+            throw InputMismatchException("$endTag is not an End-Tag")
+        }
+        var s = xml.readText()
+        s = s.replace(endTag, replaceWith)
+        xml.writeText(s)
+    }
+
+    /**
+     * 获取 ICON 的文件名
+     */
     fun getIconName(decompileDir: String): String {
         val manifest = File(decompileDir, "AndroidManifest.xml").readText()
         val p = Pattern.compile("android:icon=\"(.*?)\"")
@@ -25,7 +44,26 @@ object AndroidManifestHandler {
         return iconName
     }
 
-    fun getThirdPartyLoginManifest(loginType: String, qqAppId: String, weChatAppId: String, packageName: String): String {
+    /**
+     * 获取主 Activity 设置的屏幕方向
+     */
+    private fun getMainActivityScreenOrientation(androidManifest: File): String? {
+        SAXReader().read(androidManifest).rootElement.element("application").elements("activity").forEach { activityNode ->
+            activityNode.element("intent-filter")?.apply {
+                elements("action").forEach { actionNode ->
+                    if (actionNode.attributeValue("name") == "android.intent.action.MAIN") {    // 存在该 Action 即可认为是主 Activity
+                        return activityNode.attributeValue("screenOrientation")
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    /**
+     * 三方登录需要设置的 AndroidManifest
+     */
+    fun setThirdPartyLoginManifest(decompileDir: String, loginType: String, qqAppId: String, weChatAppId: String, packageName: String) {
         val qq = """
             <activity 
                 android:name="com.tencent.tauth.AuthActivity"
@@ -54,39 +92,12 @@ object AndroidManifestHandler {
 				android:launchMode="singleTask" />
         """.trimIndent()
 
-        return when (loginType) {
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", when (loginType) {
             "1" -> weChat
             "2" -> qq
             "3" -> qq + weChat
             else -> ""
-        }
-    }
-
-    /**
-     * 在 <application> 节点下添加内容
-     * 方法：直接替换尾标签 </application>
-     */
-    fun addApplicationConfig(decompileDir: String, content: String) {
-        val file = File(decompileDir, "AndroidManifest.xml")
-        var manifest = file.readText()
-        manifest = manifest.replace("</application>", "$content</application>")
-        file.writeText(manifest)
-    }
-
-    /**
-     * 获取主 Activity 设置的屏幕方向
-     */
-    private fun getMainActivityScreenOrientation(androidManifest: File): String? {
-        SAXReader().read(androidManifest).rootElement.element("application").elements("activity").forEach { activityNode ->
-            activityNode.element("intent-filter")?.apply {
-                elements("action").forEach { actionNode ->
-                    if (actionNode.attributeValue("name") == "android.intent.action.MAIN") {    // 存在该 Action 即可认为是主 Activity
-                        return activityNode.attributeValue("screenOrientation")
-                    }
-                }
-            }
-        }
-        return null
+        } + "</application>")
     }
 
     /**
@@ -165,7 +176,7 @@ object AndroidManifestHandler {
                 android:largeScreens="true"
                 android:normalScreens="true" />
         """.trimIndent()
-        addApplicationConfig(decompileDir, content)
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
         val document = SAXReader().read(file)
         document.rootElement.element("application").elements("activity").forEach { activityNode ->
             activityNode.element("intent-filter")?.apply {
@@ -186,6 +197,9 @@ object AndroidManifestHandler {
         writer.close()
     }
 
+    /**
+     * 小米联运的 AndroidManifest 设置
+     */
     fun setMiManifest(decompileDir: String, packageName: String) {
         val content = """
                 <meta-data
@@ -277,6 +291,94 @@ object AndroidManifestHandler {
             <uses-permission android:name="com.xiaomi.permission.AUTH_SERVICE" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
         """.trimIndent()
-        addApplicationConfig(decompileDir, content)
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+    }
+
+    /**
+     * OPPO 联运的 AndroidManifest 设置
+     */
+    fun setOppoManifest(decompileDir: String, packageName: String, appKey: String, appSecret: String) {
+        val content = """
+                <activity
+                    android:name="com.nearme.game.sdk.component.proxy.JumpToProxyActivity"
+                    android:configChanges="keyboardHidden|orientation|screenSize"
+                    android:exported="true"
+                    android:process=":gcsdk"
+                    android:theme="@style/Theme_Dialog_Custom" />
+                <provider
+                    android:name="com.nearme.platform.opensdk.pay.NearMeFileProvider"
+                    android:authorities="$packageName.fileProvider"
+                    android:exported="false"
+                    android:grantUriPermissions="true" >
+                    <meta-data
+                        android:name="android.support.FILE_PROVIDER_PATHS"
+                        android:resource="@xml/oppo_file_paths" />
+                </provider>
+                <activity
+                    android:name="com.nearme.game.sdk.component.proxy.ProxyActivity"
+                    android:configChanges="keyboardHidden|orientation|screenSize"
+                    android:exported="false"
+                    android:process=":gcsdk"
+                    android:theme="@style/Theme_Dialog_Custom" />
+                <activity
+                    android:name="com.nearme.game.sdk.component.proxy.ExitActivity"
+                    android:configChanges="keyboardHidden|orientation|screenSize"
+                    android:exported="false"
+                    android:launchMode="singleTask"
+                    android:process=":gcsdk"
+                    android:theme="@style/Theme_Dialog_Custom" />
+                <service
+                    android:name="com.nearme.game.sdk.component.proxy.ProxyApiService"
+                    android:priority="1000"
+                    android:process=":gcsdk" />
+                <receiver
+                    android:name="com.nearme.game.sdk.component.proxy.ProxyUserCenterOperateReceiver"
+                    android:exported="true"
+                    android:process=":gcsdk" >
+                    <intent-filter>
+                        <action android:name="com.oppo.usercenter.account_login" />
+                        <action android:name="com.oppo.usercenter.account_logout" />
+                        <action android:name="com.oppo.usercenter.modify_name" />
+                        <action android:name="com.usercenter.action.receiver.account_login" />
+                        <action android:name="com.heytap.usercenter.account_logout" />
+                    </intent-filter>
+                </receiver>
+                <meta-data
+                    android:name="debug_mode"
+                    android:value="false" />
+                <meta-data
+                    android:name="is_offline_game"
+                    android:value="false" />
+                <meta-data
+                    android:name="app_key"
+                    android:value="$appKey" />
+                <meta-data
+                    android:name="app_secret"
+                    android:value="$appSecret" />
+            </application>
+            <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+            <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+        """.trimIndent()
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+    }
+
+    /**
+     * OPPO 联运的 Style 设置
+     */
+    fun setOppoStyle(decompileDir: String) {
+        val content = """
+                <style name="Theme_Dialog_Custom">
+                    <item name="android:windowFrame">@null</item>
+                    <item name="android:windowFullscreen">true</item>
+                    <item name="android:windowNoTitle">true</item>
+                    <item name="android:windowBackground">@android:color/transparent</item>
+                    <item name="android:windowIsFloating">true</item>
+                    <item name="android:windowContentOverlay">@null</item>
+                </style>
+            </resources>
+        """.trimIndent()
+        val file = File(decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "styles.xml")
+        replaceXmlEndTag(file, "</resources>", content)
     }
 }

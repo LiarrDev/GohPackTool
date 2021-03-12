@@ -1,7 +1,7 @@
 package com.channels
 
 import com.games.*
-import com.utils.AndroidManifestHandler
+import com.utils.AndroidXmlHandler
 import com.utils.PropertiesUtil
 import java.io.File
 
@@ -110,7 +110,7 @@ fun main(vararg args: String) {
         channelConfig(channelTag, "", "")
         setPackType(packType)
         extra {
-            AndroidManifestHandler.setMiManifest(decompileDir, packageName)
+            AndroidXmlHandler.setMiManifest(decompileDir, packageName)
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "mi_config.ini"))
                     .setProperties(mapOf(
                             "mi_app_id" to channelAppId,

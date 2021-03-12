@@ -59,7 +59,7 @@ abstract class Game(private val apk: String) {
             println("ICON 格式不正确")
             throw Exception("ICON 格式不正确")
         }
-        val iconName = AndroidManifestHandler.getIconName(decompileDir)
+        val iconName = AndroidXmlHandler.getIconName(decompileDir)
         val file = File(icon)
         return if (file.exists() && file.isFile) {
 
@@ -222,8 +222,7 @@ abstract class Game(private val apk: String) {
             val targetSdk = targetMSDK + File.separator + "api" + File.separator + "sdk"
             sourceSdk.copyDirTo(File(targetSdk))
             sourceMSDK.copyDirTo(File(targetMSDK))
-            val manifest = AndroidManifestHandler.getThirdPartyLoginManifest(loginType, qqAppId, weChatAppId, packageName)
-            AndroidManifestHandler.addApplicationConfig(decompileDir, manifest)
+            AndroidXmlHandler.setThirdPartyLoginManifest(decompileDir, loginType, qqAppId, weChatAppId, packageName)
 
             when (loginType) {
                 "1" -> {

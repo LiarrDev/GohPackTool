@@ -1,7 +1,7 @@
 package com.channels
 
 import com.games.*
-import com.utils.AndroidManifestHandler
+import com.utils.AndroidXmlHandler
 import com.utils.FileUtil
 import com.utils.PropertiesUtil
 import java.io.File
@@ -135,7 +135,7 @@ fun main(vararg args: String) {
                                 "https://ysdk.qq.com"
                             }
                     ))
-            AndroidManifestHandler.setYsdkManifest(decompileDir, packageName, qqAppId, wxAppId)
+            AndroidXmlHandler.setYsdkManifest(decompileDir, packageName, qqAppId, wxAppId)
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
