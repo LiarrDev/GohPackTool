@@ -160,6 +160,37 @@ object FileUtil {
             }
         }
     }
+
+    /**
+     * 删除原平台支付，因为某些联运渠道禁止使用非联运支付方式
+     */
+    fun deleteOriginPayMethod(decompileDir: String) {
+        val filter = "PayWebDialog"
+        fun deletePayDialogFrom(file: File) {
+            if (file.exists()) {
+                val list = file.listFiles()
+                if (list != null && list.isNotEmpty()) {
+                    list.forEach { f ->
+                        if (f.name.indexOf(filter) != -1) {
+                            delete(f)
+                        }
+                    }
+                }
+            }
+        }
+
+        val ryPayWebDialog1 = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view")
+        val ryPayWebDialog2 = File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view")
+        val payWebDialog1 = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view" + File.separator + "com")
+        val payWebDialog2 = File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view" + File.separator + "com")
+        deletePayDialogFrom(ryPayWebDialog1)
+        deletePayDialogFrom(ryPayWebDialog2)
+        deletePayDialogFrom(payWebDialog1)
+        deletePayDialogFrom(payWebDialog2)
+        delete(File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "ipaynow"))
+        delete(File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "ipaynow"))
+
+    }
 }
 
 fun File.loadDocument(): Document? {

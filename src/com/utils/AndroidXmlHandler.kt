@@ -295,6 +295,40 @@ object AndroidXmlHandler {
     }
 
     /**
+     * ViVO 联运的 AndroidManifest 设置
+     */
+    fun setVivoManifest(decompileDir: String, appId: String) {
+        val content = """
+                <meta-data
+                    android:name="vivo_app_id"
+                    android:value="$appId" />
+                <meta-data
+                    android:name="vivo_union_sdk"
+                    android:value="4.6.0.1" />
+                <activity
+                    android:name="com.vivo.unionsdk.ui.UnionActivity"
+                    android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+                    android:exported="false"
+                    android:theme="@android:style/Theme.Dialog">
+                    <intent-filter>
+                        <action android:name="android.intent.action.VIEW" />
+                        <category android:name="android.intent.category.DEFAULT" />
+                        <category android:name="android.intent.category.BROWSABLE" />
+                        <data
+                            android:host="union.vivo.com"
+                            android:path="/openjump"
+                            android:scheme="vivounion" />
+                    </intent-filter>
+                </activity>
+            </application>
+            <uses-permission android:name="vivo.game.permission.OPEN_JUMP_INTENTS" />
+            <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+        """.trimIndent()
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+    }
+
+    /**
      * OPPO 联运的 AndroidManifest 设置
      */
     fun setOppoManifest(decompileDir: String, packageName: String, appKey: String, appSecret: String) {
