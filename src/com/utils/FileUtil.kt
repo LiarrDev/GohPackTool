@@ -119,30 +119,6 @@ object FileUtil {
     }
 
     /**
-     * 写入平台参数
-     */
-    @Deprecated("由 PropertiesUtil 提供支持", ReplaceWith("PropertiesUtil(propertiesFile).setProperties(map)"))
-    fun writePlatformProperties(propertiesFile: File, map: Map<String, String>): Boolean {
-        return try {
-            val properties = Properties()
-            val fis = FileInputStream(propertiesFile)
-            properties.load(fis)
-            map.forEach { (key, value) ->
-                println("Key = $key, Value = $value")
-                properties.setProperty(key, value)
-            }
-            val fos = FileOutputStream(propertiesFile)
-            properties.store(fos, "#--#")
-            fos.close()
-            fis.close()
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    /**
      * 替换图片资源
      */
     fun replaceResource(newImagePath: String?, oldImagePath: String): Boolean {

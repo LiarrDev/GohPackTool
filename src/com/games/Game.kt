@@ -263,11 +263,7 @@ abstract class Game(private val apk: String) {
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本郑家
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
 
-        // TODO: 改用 PropertiesUtil
-        FileUtil.writePlatformProperties(
-                File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"),
-                map
-        )
+        PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil")).setProperties(map)
     }
 
     /**
