@@ -1,6 +1,7 @@
 package com.utils
 
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 
 object CommandUtil {
@@ -16,6 +17,21 @@ object CommandUtil {
             true
         } else {
             println("$command    Command execute failed.")
+            false
+        }
+    }
+
+    internal fun decompile(apk:String,decompileDir: String, apktool: String): Boolean {
+        val apkFile = File(apk)
+        return if (apkFile.exists() && apkFile.isFile) {
+            val decompileFile = File(decompileDir)
+            if (decompileFile.exists()) {
+                FileUtil.delete(decompileFile)
+            }
+            val command = "java -jar $apktool d -f $apk -o $decompileDir --only-main-classes"
+            exec(command)
+        } else {
+            print("APK is not exist.")
             false
         }
     }

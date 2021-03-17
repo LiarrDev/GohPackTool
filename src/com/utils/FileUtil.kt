@@ -2,10 +2,7 @@ package com.utils
 
 import org.w3c.dom.Document
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.nio.file.Files
-import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
@@ -29,42 +26,6 @@ object FileUtil {
             file.delete()
         } else {
             println("${file.absoluteFile} is not exist")
-        }
-    }
-
-    /**
-     * 复制目录
-     */
-    @Deprecated("已用扩展方法重写", ReplaceWith("File(sourceDirPath).copyDir(File(targetDirPath))"))
-    fun copyDir(sourceDirPath: String, targetDirPath: String) {
-        File(targetDirPath).mkdirs()        // 假如目标文件夹不存在则新建
-        val file = File(sourceDirPath)
-        val files = file.listFiles()
-        if (file.exists()) {
-            println("文件夹存在：" + file.name)
-        } else {
-            println("""
-                文件夹不存在：${file.name}
-                SourcePath: $sourceDirPath
-                TargetPath: $targetDirPath
-            """.trimIndent()
-            )
-        }
-        println("""
-            文件长度：${files?.size}
-            SourcePath: $sourceDirPath
-            TargetPath: $targetDirPath
-        """.trimIndent()
-        )
-
-        files?.forEach { f ->
-            if (f.isFile) {
-                val targetFile = File(targetDirPath + File.separator + f.name)
-                f.replace(targetFile)
-            } else if (f.isDirectory) {
-                val dir = targetDirPath + File.separator + f
-                copyDir(f.absolutePath, dir)
-            }
         }
     }
 

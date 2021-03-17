@@ -1,7 +1,5 @@
 package com.utils
 
-import java.nio.CharBuffer
-
 /**
  * 中文转 Unicode
  */

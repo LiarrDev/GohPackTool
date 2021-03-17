@@ -17,7 +17,7 @@ fun main(vararg args: String) {
     val keyStorePath = args[3]              // 签名路径
 
     val gid = args[4]                       // 游戏 GID
-    val pkid = args[5]                      // 游戏 PKID
+    val pkId = args[5]                      // 游戏 PKID
     val pkName = args[6]                    // 副包名称
     val packageName = args[7]               // 包名
     val appName = args[8]                   // 应用名称，如果为空则使用副包名称
@@ -47,7 +47,7 @@ fun main(vararg args: String) {
             keyStorePath = $keyStorePath
             
             gid = $gid
-            pkid = $pkid
+            pkId = $pkId
             pkName = $pkName
             packageName = $packageName
             appName = $appName
@@ -105,7 +105,7 @@ fun main(vararg args: String) {
                 }
         )
         setPackageName(packageName)
-        gameConfig(sdkVersion, pkid, "2")
+        gameConfig(sdkVersion, pkId, "2")
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)

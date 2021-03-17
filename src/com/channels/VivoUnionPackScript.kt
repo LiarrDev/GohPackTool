@@ -1,6 +1,7 @@
 package com.channels
 
 import com.games.*
+import com.utils.AndroidXmlHandler
 import com.utils.FileUtil
 import com.utils.PropertiesUtil
 import java.io.File
@@ -17,7 +18,7 @@ fun main(vararg args: String) {
     val keyStorePath = args[3]              // 签名路径
 
     val gid = args[4]                       // 游戏 GID
-    val pkid = args[5]                      // 游戏 PKID
+    val pkId = args[5]                      // 游戏 PKID
     val pkName = args[6]                    // 副包名称
     val packageName = args[7]               // 包名
     val appName = args[8]                   // 应用名称，如果为空则使用副包名称
@@ -46,7 +47,7 @@ fun main(vararg args: String) {
             keyStorePath = $keyStorePath
             
             gid = $gid
-            pkid = $pkid
+            pkId = $pkId
             pkName = $pkName
             packageName = $packageName
             appName = $appName
@@ -103,15 +104,15 @@ fun main(vararg args: String) {
                 }
         )
         setPackageName(packageName)
-        gameConfig(sdkVersion, pkid, "4")
+        gameConfig(sdkVersion, pkId, "4")
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
         extra {
+            AndroidXmlHandler.setVivoManifest(decompileDir, channelAppId)
             FileUtil.deleteOriginPayMethod(decompileDir)
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
                     .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
-
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()

@@ -32,7 +32,6 @@ class Game139(apk: String) : Game(apk) {
 
     /**
      * 打入某些联运渠道后会提示方法超限，所以要做分 Dex 处理
-     * TODO: 待测试
      */
     override fun patchChannelFile(patchFile: String) {
         super.patchChannelFile(patchFile)

@@ -18,7 +18,7 @@ abstract class Game(private val apk: String) {
     private lateinit var apktool: String
     private lateinit var gameName: String
     private lateinit var pkgName: String
-    private lateinit var pkid: String
+    private lateinit var pkId: String
     private var loginType = "0"
 
     /**
@@ -29,18 +29,7 @@ abstract class Game(private val apk: String) {
         this.decompileDir = decompileDir
         this.apktool = apktool
 
-        val apkFile = File(apk)
-        return if (apkFile.exists() && apkFile.isFile) {
-            val decompileFile = File(decompileDir)
-            if (decompileFile.exists()) {
-                FileUtil.delete(decompileFile)
-            }
-            val command = "java -jar $apktool d -f $apk -o $decompileDir --only-main-classes"
-            CommandUtil.exec(command)
-        } else {
-            print("APK is not exist.")
-            false
-        }
+        return CommandUtil.decompile(apk, decompileDir, apktool)
     }
 
     /**
@@ -157,11 +146,11 @@ abstract class Game(private val apk: String) {
     /**
      * 修改游戏配置 ZSinfo.xml
      * @param sdkVersion SDK 版本号
-     * @param pkid 副包 ID，配置文件里 kpid 和 pkid 都要改，kpid 是老名字，后面废弃
+     * @param pkId 副包 ID，配置文件里 kpid 和 pkid 都要改，kpid 是老名字，后面废弃
      * @param unionPlatform 联运平台类型，默认买量是 1，其他联运根据后台设定
      */
-    fun gameConfig(sdkVersion: String, pkid: String, unionPlatform: String = "1") {
-        this.pkid = pkid
+    fun gameConfig(sdkVersion: String, pkId: String, unionPlatform: String = "1") {
+        this.pkId = pkId
         val file = File(decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml")
         val document = file.loadDocument()
         document?.documentElement?.apply {
@@ -169,7 +158,7 @@ abstract class Game(private val apk: String) {
                 for (i in 0 until childNodes.length) {
                     val node = childNodes.item(i)
                     when (node.nodeName) {
-                        "kpid", "pkid" -> node.firstChild.nodeValue = pkid
+                        "kpid", "pkid" -> node.firstChild.nodeValue = pkId
                         "version" -> node.firstChild.nodeValue = sdkVersion
                         "platform" -> node.firstChild.nodeValue = unionPlatform
                     }
@@ -317,7 +306,7 @@ abstract class Game(private val apk: String) {
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"))
         val fileName = "${gameName}_${
             pkgName.substring(pkgName.lastIndexOf(".") + 1)     // 截取包名最后一段拼接，由于现参数混用，这种方法已无法标记到包，只能靠 pkid，后面可以考虑将 pkName 转拼音拼接
-        }_${gid}_${pkid}_${appVersion}_rongyao_${time}_${channelAbbr}${loginType}.apk"
+        }_${gid}_${pkId}_${appVersion}_rongyao_${time}_${channelAbbr}${loginType}.apk"
         val filePath = generatePath + File.separator + fileName
         println("文件路径：$filePath")
 

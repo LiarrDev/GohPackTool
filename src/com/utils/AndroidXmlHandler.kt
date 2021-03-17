@@ -415,4 +415,42 @@ object AndroidXmlHandler {
         val file = File(decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "styles.xml")
         replaceXmlEndTag(file, "</resources>", content)
     }
+
+    fun updateGameConfig(decompileDir: String, params: Map<String, String>) {
+        val file = File(decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml")
+        val document = SAXReader().read(file)
+        params.forEach { (key, value) ->
+            when (key) {
+                "pkid" -> {
+                    document.rootElement.element("pkid").text = value
+                    document.rootElement.element("kpid").text = value
+                }
+                "version", "platform", "appid", "channel", "adid", "pcid", "packtype", "register_ratio", "purchase_ratio" -> {
+                    val element = document.rootElement.element(key)
+                    if (element == null) {
+                        document.rootElement.addElement(key).text = value
+                    } else {
+                        element.text = value
+                    }
+                }
+            }
+        }
+        val writer = XMLWriter(FileWriter(file))
+        writer.write(document)
+        writer.close()
+    }
+
+    fun setAppName(decompileDir: String, appName: String) {
+        val xml = decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "strings.xml"
+        val file = File(xml)
+        val document = SAXReader().read(file)
+        document.rootElement.elements("string").forEach {
+            if (it.attributeValue("name") == "app_name") {
+                it.text = appName
+            }
+        }
+        val writer = XMLWriter(FileWriter(file))
+        writer.write(document)
+        writer.close()
+    }
 }
