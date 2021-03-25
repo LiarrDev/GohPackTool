@@ -16,13 +16,7 @@ class Game119(apk: String) : Game(apk) {
         FileUtil.replaceResource(loadingImage, gameLoadingImgPath)
     }
 
-    override fun generateSignedApk(
-        keyStorePath: String,
-        generatePath: String,
-        gid: String,
-        appVersion: String,
-        channelAbbr: String
-    ): Boolean {
+    override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelAbbr: String): Boolean {
         return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "nsmy")
     }
 }

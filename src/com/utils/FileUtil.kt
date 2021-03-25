@@ -106,7 +106,7 @@ object FileUtil {
         fun deletePayDialogFrom(file: File) {
             if (file.exists()) {
                 val list = file.listFiles()
-                if (list != null && list.isNotEmpty()) {
+                if (!list.isNullOrEmpty()){
                     list.forEach { f ->
                         if (f.name.indexOf(filter) != -1) {
                             delete(f)

@@ -8,6 +8,7 @@ import java.io.File
  * 逆火苍穹
  */
 class Game125(apk: String) : Game(apk) {
+
     override fun replaceResource(loginImage: String?, loadingImage: String?, logoImage: String?, splashImage: String?) {
         val gameLoginImgPath = decompileDir + File.separator + "assets" + File.separator + "agent" + File.separator + "login_bg.jpg"
         val gameLoadingImgPath = decompileDir + File.separator + "assets" + File.separator + "agent" + File.separator + "update_bg.jpg"

@@ -201,7 +201,7 @@ abstract class Game(private val apk: String) {
             weChatAppId: String,
             packageName: String
     ) {
-        val open = (loginType != null && loginType.isNotBlank() && "0" != loginType)
+        val open = !loginType.isNullOrBlank() && "0" != loginType
         if (open) {
             this.loginType = loginType!!
             val sourceSdk = File(thirdPartyBasePatch, "sdk")

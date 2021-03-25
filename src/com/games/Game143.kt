@@ -1,10 +1,10 @@
 package com.games
 
 /**
- * GID: 120
- * 冒险联盟 / 天堂奇缘
+ * GID: 143
+ * 天命山海测试1
  */
-class Game120(apk: String) : Game(apk) {
+class Game143(apk: String) : Game(apk) {
 
     /**
      * 不需要替换素材
@@ -13,6 +13,6 @@ class Game120(apk: String) : Game(apk) {
     }
 
     override fun generateSignedApk(keyStorePath: String, generatePath: String, gid: String, appVersion: String, channelAbbr: String): Boolean {
-        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "mxlm")
+        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "tmshcs1")
     }
 }

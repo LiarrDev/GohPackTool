@@ -6,8 +6,6 @@ Android 游戏客户端渠道打包脚本 for GohSDK。
 
 根据 channels 文件夹下的脚本按顺序传入各参数执行 Jar 命令即可。
 
-打不同脚本时记得修改 MANIFEST.MF 文件。
-
 ## Development
 
 ### Games
@@ -53,3 +51,8 @@ class GameXXX(apk: String) : Game(apk) {
 ### Utils
 
 工具合集，按需添加。
+
+## Libraries
+
+- [Dom4J](https://github.com/dom4j/dom4j)
+- [Zip4J](https://github.com/srikanth-lingala/zip4j)

@@ -83,7 +83,7 @@ fun main(vararg args: String) {
     }
 
     try {
-        if (!System.getProperty("os.name").contains("Windows")) {       // Linux 需要文件操作权限
+        if (!System.getProperty("os.name").contains("Windows")) {       // Linux 可能需要文件操作权限
             CommandUtil.exec("chmod 777 $apk")
         }
         val signCommand = "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $releaseApk $apk $keyAlias"
