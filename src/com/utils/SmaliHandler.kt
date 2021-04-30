@@ -7,6 +7,9 @@ import java.io.File
  */
 object SmaliHandler {
 
+    /**
+     * 获取默认的主体
+     */
     fun getDefaultCoType(decompileDir: String): Int {
         val file = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilString.smali")
         val smali = file.readText()
@@ -17,6 +20,9 @@ object SmaliHandler {
         }
     }
 
+    /**
+     * ApiSendMessage 接口的前缀
+     */
     fun setUrlCoPrefix(decompileDir: String, coPrefix: String, defaultCoType: Int) {
         val defaultUrl = when (defaultCoType) {
             1 -> "message/api/ApiSendMessage.php"
@@ -35,6 +41,9 @@ object SmaliHandler {
         println("--> ApiSendMessage 添加前缀完成")
     }
 
+    /**
+     * 随机账号前缀
+     */
     fun setRegisterAccountPrefix(decompileDir: String, coPrefix: String, defaultCoType: Int) {
         val defaultPrefix = when (defaultCoType) {
             1 -> "\"ry\""
@@ -42,17 +51,16 @@ object SmaliHandler {
             else -> "\"def\""
         }
         val file = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilTool.smali")
-        val prefix = if (coPrefix.isBlank()) {
-            "cq"
-        } else {
-            coPrefix
-        }
+        val prefix = coPrefix.ifBlank { "cq" }
         var smali = file.readText()
         smali = smali.replace(defaultPrefix, "\"" + prefix + "\"")
         file.writeText(smali)
         println("--> 修改随机账号前缀完成")
     }
 
+    /**
+     * 分享内容的主体文字
+     */
     fun setCoShareText(decompileDir: String, coText: String, defaultCoType: Int) {
         val defaultCoText = when (defaultCoType) {
             1 -> "\\u8363\\u8000\\u6e38\\u620f\\uff1a"      // “荣耀游戏：”
@@ -66,6 +74,9 @@ object SmaliHandler {
         println("--> 分享下载链接公司文字修改完成")
     }
 
+    /**
+     * 全局替换请求 URL 中主体域名
+     */
     fun setCoDomain(decompileDir: String, coDomain: String, defaultCoType: Int) {
         val defaultCoDomain = when (defaultCoType) {
             1 -> "rongyao666.com"
@@ -79,5 +90,36 @@ object SmaliHandler {
         smali = smali.replace(defaultCoDomain, coDomain)
         file.writeText(smali)
         println("--> 请求域名修改完成")
+    }
+
+    /**
+     * 复制备用域名文件 domains.xml
+     */
+    fun copySpareDomainsFile(decompileDir: String, switchDomainFile: String) {
+        if (!switchDomainFile.endsWith("domains.xml")) {
+            println("文件名不合法，正确的文件名为 domains.xml")
+            return
+        }
+        val dir = File(decompileDir + File.separator + "assets")
+        val file = File(switchDomainFile)
+        file.copyTo(dir)
+        println("--> 备用域名文件配置完成")
+    }
+
+    /**
+     * 替换协议链接
+     */
+    fun setCoContract(decompileDir: String, defaultCoType: Int, coSuffix: String) {
+        val defaultSuffix = when (defaultCoType) {
+            1 -> "ry"
+            2 -> "cq"
+            else -> return
+        }
+        val file = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilString.smali")
+        var smali = file.readText()
+        smali = smali.replace("user_agreement_$defaultSuffix.html", "user_agreement_$coSuffix.html")
+        smali = smali.replace("reivacy_agreement_$defaultSuffix.html", "reivacy_agreement_$coSuffix.html")
+        file.writeText(smali)
+        println("--> 修改协议链接完成")
     }
 }

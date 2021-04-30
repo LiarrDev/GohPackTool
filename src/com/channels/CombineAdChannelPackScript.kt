@@ -107,6 +107,7 @@ fun main(vararg args: String) {
         "139" -> Game139(apk)
         "141" -> Game141(apk)
         else -> null
+//        else-> GameDefault(apk)
     }
     game?.apply {
         decompile(generatePath + File.separator + "temp", apktool)
