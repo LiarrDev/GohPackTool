@@ -23,6 +23,10 @@ class GameXXX(apk: String) : Game(apk) {
         // 只需修改最后一个参数为游戏拼音简写即可
         return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelName, "xxx")
     }
+
+    override fun patchChannelFile(patchFile: String) {
+        // 此方法不是必须重写的，如果游戏用到了分 Dex 且 SDK 不在首个 Dex 中，则需重写此方法将渠道文件注入到对应的 Dex 中
+    }
 }
 ```
 

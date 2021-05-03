@@ -38,7 +38,7 @@ fun main(vararg args: String) {
     val channelAbbr = "Mi"                  // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
 
     println(
-            """
+        """
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
@@ -68,41 +68,18 @@ fun main(vararg args: String) {
             channelAbbr = $packType$channelAbbr
             
             ═════════════════════════════════════════════════════════════════╝
-    """.trimIndent())
+    """.trimIndent()
+    )
 
-    val game = when (gid) {
-        "111" -> Game111(apk)
-        "116" -> Game116(apk)
-        "119" -> Game119(apk)
-        "120" -> Game120(apk)
-        "123" -> Game123(apk)
-        "124" -> Game124(apk)
-        "125" -> Game125(apk)
-        "126" -> Game126(apk)
-        "127" -> Game127(apk)
-        "128" -> Game128(apk)
-        "129" -> Game129(apk)
-        "131" -> Game131(apk)
-        "132" -> Game132(apk)
-        "133" -> Game133(apk)
-        "135" -> Game135(apk)
-        "136" -> Game136(apk)
-        "137" -> Game137(apk)
-        "139" -> Game139(apk)
-        "141" -> Game141(apk)
-        else -> null
-    }
-    game?.apply {
+    GameFactory(apk).getGame(gid)?.apply {
         val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)
         setAppName(
-                if (appName.isBlank()) {
-                    pkName
-                } else {
-                    appName
-                }
+            appName.ifBlank {
+                pkName
+            }
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId, "8")
@@ -112,10 +89,12 @@ fun main(vararg args: String) {
         extra {
             AndroidXmlHandler.setMiManifest(decompileDir, packageName)
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "mi_config.ini"))
-                    .setProperties(mapOf(
-                            "mi_app_id" to channelAppId,
-                            "mi_app_key" to channelAppKey
-                    ))
+                .setProperties(
+                    mapOf(
+                        "mi_app_id" to channelAppId,
+                        "mi_app_key" to channelAppKey
+                    )
+                )
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()

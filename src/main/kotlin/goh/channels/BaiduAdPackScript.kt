@@ -87,39 +87,15 @@ fun main(vararg  args:String) {
     """.trimIndent()
     )
 
-    val game = when (gid) {
-        "111" -> Game111(apk)
-        "116" -> Game116(apk)
-        "119" -> Game119(apk)
-        "120" -> Game120(apk)
-        "123" -> Game123(apk)
-        "124" -> Game124(apk)
-        "125" -> Game125(apk)
-        "126" -> Game126(apk)
-        "127" -> Game127(apk)
-        "128" -> Game128(apk)
-        "129" -> Game129(apk)
-        "131" -> Game131(apk)
-        "132" -> Game132(apk)
-        "133" -> Game133(apk)
-        "135" -> Game135(apk)
-        "136" -> Game136(apk)
-        "137" -> Game137(apk)
-        "139" -> Game139(apk)
-        "141" -> Game141(apk)
-        else -> null
-    }
-    game?.apply {
+    GameFactory(apk).getGame(gid)?.apply {
         val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)
         setAppName(
-                if (appName.isBlank()) {
-                    pkName
-                } else {
-                    appName
-                }
+            appName.ifBlank {
+                pkName
+            }
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId)

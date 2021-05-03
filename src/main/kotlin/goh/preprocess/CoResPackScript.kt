@@ -1,9 +1,6 @@
 package goh.preprocess
 
-import goh.utils.DrawableUtil
-import goh.utils.PropertiesUtil
-import goh.utils.SmaliHandler
-import goh.utils.toUnicode
+import goh.utils.*
 import java.io.File
 
 /**
@@ -25,7 +22,8 @@ fun main(vararg args: String) {
     // 取出默认的主体类型。注：不能根据配置文件的 agreement_type 来判断，因为母包已经乱了🙃，等后续修正后可以考虑使用该字段判断，现使用判断域名的方式
     val defaultCoType = SmaliHandler.getDefaultCoType(decompileDir)
 
-    println("""
+    println(
+        """
         decompileDir = $decompileDir
         coResDir = $coResDir
         coType = $coType
@@ -34,18 +32,21 @@ fun main(vararg args: String) {
         coDomain = $coDomain
         defaultCo = $defaultCoType
         domainFile = $switchDomainFile
-    """.trimIndent())
+    """.trimIndent()
+    )
 
     // 替换主体资源
     DrawableUtil.replaceCoDrawable(decompileDir, coResDir)
 
     PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
-            .setProperties(mapOf(
-                    "registerType" to coType,           // 设置主体类型
-                    "phone_auth_package" to "com.tencent.tmgp.wzjhhb.wzjh"  // 本机号码一键登录包名设置
-            ))
+        .setProperties(
+            mapOf(
+                "registerType" to coType,           // 设置主体类型
+                "phone_auth_package" to "com.tencent.tmgp.wzjhhb.wzjh"  // 本机号码一键登录包名设置
+            )
+        )
 
-    SmaliHandler.copySpareDomainsFile(decompileDir, switchDomainFile)
+    FileUtil.copySpareDomainsFile(decompileDir, switchDomainFile)
     SmaliHandler.setUrlCoPrefix(decompileDir, urlCoPrefix, defaultCoType)
     SmaliHandler.setRegisterAccountPrefix(decompileDir, urlCoPrefix, defaultCoType)
     SmaliHandler.setCoShareText(decompileDir, coText, defaultCoType)

@@ -38,7 +38,7 @@ fun main(vararg args: String) {
     val channelAbbr = "Oppo"                // 渠道简称
 
     println(
-            """
+        """
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
@@ -68,41 +68,18 @@ fun main(vararg args: String) {
             channelAbbr = $packType$channelAbbr
             
             ═════════════════════════════════════════════════════════════════╝
-    """.trimIndent())
+    """.trimIndent()
+    )
 
-    val game = when (gid) {
-        "111" -> Game111(apk)
-        "116" -> Game116(apk)
-        "119" -> Game119(apk)
-        "120" -> Game120(apk)
-        "123" -> Game123(apk)
-        "124" -> Game124(apk)
-        "125" -> Game125(apk)
-        "126" -> Game126(apk)
-        "127" -> Game127(apk)
-        "128" -> Game128(apk)
-        "129" -> Game129(apk)
-        "131" -> Game131(apk)
-        "132" -> Game132(apk)
-        "133" -> Game133(apk)
-        "135" -> Game135(apk)
-        "136" -> Game136(apk)
-        "137" -> Game137(apk)
-        "139" -> Game139(apk)
-        "141" -> Game141(apk)
-        else -> null
-    }
-    game?.apply {
+    GameFactory(apk).getGame(gid)?.apply {
         val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)
         setAppName(
-                if (appName.isBlank()) {
-                    pkName
-                } else {
-                    appName
-                }
+            appName.ifBlank {
+                pkName
+            }
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId, "2")
@@ -111,7 +88,7 @@ fun main(vararg args: String) {
         setPackType(packType)
         extra {
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
-                    .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
+                .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
             AndroidXmlHandler.setOppoManifest(decompileDir, packageName, channelAppKey, channelAppSecret)
             AndroidXmlHandler.setOppoStyle(decompileDir)
         }

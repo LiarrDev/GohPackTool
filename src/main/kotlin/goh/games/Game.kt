@@ -247,11 +247,10 @@ abstract class Game(private val apk: String) {
         } else {
             map["appId"] = channelAppId
         }
-        map["appName"] = if (channelAppName.isBlank()) gameName else channelAppName
+        map["appName"] = channelAppName.ifBlank { gameName }
         map["channel"] = "0"                                        // 这个字段暂时没有渠道需要使用（某些渠道可选，但我们暂未使用，头条渠道不能为空）
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本增加
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
-        map["phone_auth_package"] = "com.tencent.tmgp.wzjhhb.wzjh"  // 开启本机号码一键登录，需关联包名和荣耀签名，不开的话删掉即可 TODO: All Script Rebuild
 
         PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil")).setProperties(map)
     }

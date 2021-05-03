@@ -11,8 +11,14 @@ object SmaliHandler {
      * 获取默认的主体
      */
     fun getDefaultCoType(decompileDir: String): Int {
-        val file =
-            File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilString.smali")
+        val file = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "mayisdk"
+                    + File.separator + "means"
+                    + File.separator + "OutilString.smali"
+        )
         val smali = file.readText()
         return when {
             smali.contains("rongyao666.com") -> 1
@@ -35,8 +41,14 @@ object SmaliHandler {
         } else {
             coPrefix
         }
-        val file =
-            File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilString.smali")
+        val file = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "mayisdk"
+                    + File.separator + "means"
+                    + File.separator + "OutilString.smali"
+        )
         var smali = file.readText()
         smali = smali.replace(defaultUrl, "message/${prefix}api/ApiSendMessage.php")
         file.writeText(smali)
@@ -50,10 +62,16 @@ object SmaliHandler {
         val defaultPrefix = when (defaultCoType) {
             1 -> "\"ry\""
             2 -> "\"cq\""
-            else -> "\"def\""
+            else -> return
         }
-        val file =
-            File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilTool.smali")
+        val file = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "mayisdk"
+                    + File.separator + "means"
+                    + File.separator + "OutilTool.smali"
+        )
         val prefix = coPrefix.ifBlank { "cq" }
         var smali = file.readText()
         smali = smali.replace(defaultPrefix, "\"" + prefix + "\"")
@@ -70,8 +88,14 @@ object SmaliHandler {
             2 -> "\\u82cd\\u7a79\\u6e38\\u620f\\uff1a"      // “苍穹游戏：”
             else -> return
         }
-        val file =
-            File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view" + File.separator + "RyShareDialog.smali")
+        val file = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "tgsdkUi"
+                    + File.separator + "view"
+                    + File.separator + "RyShareDialog.smali"
+        )
         var smali = file.readText()
         smali = smali.replace(defaultCoText, coText)
         file.writeText(smali)
@@ -89,26 +113,18 @@ object SmaliHandler {
         }
         println("默认域名：$defaultCoDomain")
         println("修改后域名：$coDomain")
-        val file =
-            File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilString.smali")
+        val file = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "mayisdk"
+                    + File.separator + "means"
+                    + File.separator + "OutilString.smali"
+        )
         var smali = file.readText()
         smali = smali.replace(defaultCoDomain, coDomain)
         file.writeText(smali)
         println("--> 请求域名修改完成")
-    }
-
-    /**
-     * 复制备用域名文件 domains.xml
-     */
-    fun copySpareDomainsFile(decompileDir: String, switchDomainFile: String) {
-        if (!switchDomainFile.endsWith("domains.xml")) {
-            println("文件名不合法，正确的文件名为 domains.xml")
-            return
-        }
-        val target = File(decompileDir + File.separator + "assets" + File.separator + "domains.xml")
-        val file = File(switchDomainFile)
-        file.copyTo(target, overwrite = true)
-        println("--> 备用域名文件配置完成")
     }
 
     /**
@@ -120,7 +136,14 @@ object SmaliHandler {
             2 -> "cq"
             else -> return
         }
-        val file = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "mayisdk" + File.separator + "means" + File.separator + "OutilString.smali")
+        val file = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "mayisdk"
+                    + File.separator + "means"
+                    + File.separator + "OutilString.smali"
+        )
         var smali = file.readText()
         smali = smali.replace("user_agreement_$defaultSuffix.html", "user_agreement_$coSuffix.html")
         smali = smali.replace("reivacy_agreement_$defaultSuffix.html", "reivacy_agreement_$coSuffix.html")

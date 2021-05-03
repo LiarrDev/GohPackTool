@@ -72,7 +72,10 @@ object FileUtil {
      */
     fun copyYsdkWxEntry(decompileDir: String, wxApiFile: File, packageName: String) {
         val tencentPackage = packageName.replace(Regex("\\pP"), "/")
-        val targetPath = decompileDir + File.separator + "smali_classes2" + File.separator + tencentPackage + File.separator + "wxapi"
+        val targetPath = decompileDir +
+                File.separator + "smali_classes2" +
+                File.separator + tencentPackage +
+                File.separator + "wxapi"
         wxApiFile.copyDirTo(File(targetPath))
         val activity = File(targetPath, "WXEntryActivity.smali")
         val content = activity.readText().replace("com/tencent/tmgp/qyj2/qyz/wxapi", "$tencentPackage/wxapi")
@@ -84,7 +87,7 @@ object FileUtil {
      */
     fun replaceResource(newImagePath: String?, oldImagePath: String): Boolean {
         return if (newImagePath.isNullOrBlank()) {
-            println("文件不存在：$newImagePath")
+            println("文件路径不存在：$newImagePath")
             true
         } else {
             val file = File(newImagePath)
@@ -106,7 +109,7 @@ object FileUtil {
         fun deletePayDialogFrom(file: File) {
             if (file.exists()) {
                 val list = file.listFiles()
-                if (!list.isNullOrEmpty()){
+                if (!list.isNullOrEmpty()) {
                     list.forEach { f ->
                         if (f.name.indexOf(filter) != -1) {
                             delete(f)
@@ -116,17 +119,56 @@ object FileUtil {
             }
         }
 
-        val ryPayWebDialog1 = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view")
-        val ryPayWebDialog2 = File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view")
-        val payWebDialog1 = File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view" + File.separator + "com")
-        val payWebDialog2 = File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "tgsdkUi" + File.separator + "view" + File.separator + "com")
+        val ryPayWebDialog1 = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "tgsdkUi"
+                    + File.separator + "view"
+        )
+        val ryPayWebDialog2 = File(
+            decompileDir
+                    + File.separator + "smali_classes2"
+                    + File.separator + "com"
+                    + File.separator + "tgsdkUi"
+                    + File.separator + "view"
+        )
+        val payWebDialog1 = File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "tgsdkUi"
+                    + File.separator + "view"
+                    + File.separator + "com"
+        )
+        val payWebDialog2 = File(
+            decompileDir
+                    + File.separator + "smali_classes2"
+                    + File.separator + "com"
+                    + File.separator + "tgsdkUi"
+                    + File.separator + "view"
+                    + File.separator + "com"
+        )
         deletePayDialogFrom(ryPayWebDialog1)
         deletePayDialogFrom(ryPayWebDialog2)
         deletePayDialogFrom(payWebDialog1)
         deletePayDialogFrom(payWebDialog2)
         delete(File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "ipaynow"))
         delete(File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "ipaynow"))
+    }
 
+    /**
+     * 复制备用域名文件 domains.xml
+     */
+    fun copySpareDomainsFile(decompileDir: String, switchDomainFile: String) {
+        if (!switchDomainFile.endsWith("domains.xml")) {
+            println("文件名不合法，正确的文件名为 domains.xml")
+            return
+        }
+        val target = File(decompileDir + File.separator + "assets" + File.separator + "domains.xml")
+        val file = File(switchDomainFile)
+        file.copyTo(target, overwrite = true)
+        println("--> 备用域名文件配置完成")
     }
 }
 
@@ -161,18 +203,21 @@ fun Document.toFile(file: File): Boolean {
  * TODO: 用 File.copyTo(target, ture) 可以代替
  */
 fun File.replace(target: File) {
+//    if (isFile) {
+//        if (target.exists()) {
+//            FileUtil.delete(target)
+//            println("${target.absolutePath} 已存在，先删除")
+//        }
+//        try {
+//            Files.copy(this.toPath(), target.toPath())
+//            println("${this.absolutePath}  -->  ${target.absolutePath}")
+//        } catch (e: Exception) {    // 当 target 父目录不存在时会抛异常，无需理会，因为不存在时不复制，需要复制时使用 File.copyDir() 扩展方法即可
+//            e.printStackTrace()
+//            println("如果 ${target.absolutePath} 不存在，该错误无需理会")
+//        }
+//    }
     if (isFile) {
-        if (target.exists()) {
-            FileUtil.delete(target)
-            println("${target.absolutePath} 已存在，先删除")
-        }
-        try {
-            Files.copy(this.toPath(), target.toPath())
-            println("${this.absolutePath}  -->  ${target.absolutePath}")
-        } catch (e: Exception) {    // 当 target 父目录不存在时会抛异常，无需理会，因为不存在时不复制，需要复制时使用 File.copyDir() 扩展方法即可
-            e.printStackTrace()
-            println("如果 ${target.absolutePath} 不存在，该错误无需理会")
-        }
+        copyTo(target, true)
     }
 }
 

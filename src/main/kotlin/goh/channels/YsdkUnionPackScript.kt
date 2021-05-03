@@ -44,7 +44,7 @@ fun main(vararg args: String) {
     val channelAbbr = "YSDK"                // 渠道简称
 
     println(
-            """
+        """
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
@@ -79,41 +79,18 @@ fun main(vararg args: String) {
             channelAbbr = $packType$channelAbbr
             
             ═════════════════════════════════════════════════════════════════╝
-    """.trimIndent())
+    """.trimIndent()
+    )
 
-    val game = when (gid) {
-        "111" -> Game111(apk)
-        "116" -> Game116(apk)
-        "119" -> Game119(apk)
-        "120" -> Game120(apk)
-        "123" -> Game123(apk)
-        "124" -> Game124(apk)
-        "125" -> Game125(apk)
-        "126" -> Game126(apk)
-        "127" -> Game127(apk)
-        "128" -> Game128(apk)
-        "129" -> Game129(apk)
-        "131" -> Game131(apk)
-        "132" -> Game132(apk)
-        "133" -> Game133(apk)
-        "135" -> Game135(apk)
-        "136" -> Game136(apk)
-        "137" -> Game137(apk)
-        "139" -> Game139(apk)
-        "141" -> Game141(apk)
-        else -> null
-    }
-    game?.apply {
+    GameFactory(apk).getGame(gid)?.apply {
         val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)
         setAppName(
-                if (appName.isBlank()) {
-                    pkName
-                } else {
-                    appName
-                }
+            appName.ifBlank {
+                pkName
+            }
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId, "9")
@@ -123,18 +100,20 @@ fun main(vararg args: String) {
         extra {
             FileUtil.copyYsdkWxEntry(decompileDir, File(wxApiPath), packageName)
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ysdkconf.ini"))
-                    .setProperties(mapOf(
-                            "userActionSetID" to gdtUserActionSetID,
-                            "appSecretKey" to gdtAppSecretKey,
-                            "QQ_APP_ID" to qqAppId,
-                            "OFFER_ID" to qqAppId,
-                            "WX_APP_ID" to wxAppId,
-                            "YSDK_URL" to if (isTest == "1") {
-                                "https://ysdktest.qq.com"
-                            } else {
-                                "https://ysdk.qq.com"
-                            }
-                    ))
+                .setProperties(
+                    mapOf(
+                        "userActionSetID" to gdtUserActionSetID,
+                        "appSecretKey" to gdtAppSecretKey,
+                        "QQ_APP_ID" to qqAppId,
+                        "OFFER_ID" to qqAppId,
+                        "WX_APP_ID" to wxAppId,
+                        "YSDK_URL" to if (isTest == "1") {
+                            "https://ysdktest.qq.com"
+                        } else {
+                            "https://ysdk.qq.com"
+                        }
+                    )
+                )
             AndroidXmlHandler.setYsdkManifest(decompileDir, packageName, qqAppId, wxAppId)
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
