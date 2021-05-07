@@ -13,8 +13,8 @@ object EncryptUtil {
             .filter { it.isNotEmpty() }     // Kotlin 的 split() 与 Java 稍有不同，所以需要过滤空的子项
             .toTypedArray()
         val result = StringBuilder()
-        appIdStrArray.forEach { s ->
-            result.append(s)
+        appIdStrArray.forEach {
+            result.append(it)
             result.append(randomChunk())
         }
         return result.toString()

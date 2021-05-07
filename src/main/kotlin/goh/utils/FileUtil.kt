@@ -19,8 +19,8 @@ object FileUtil {
                 file.delete()
             } else if (file.isDirectory) {
                 val files = file.listFiles()
-                files?.forEach { f ->
-                    delete(f)
+                files?.forEach {
+                    delete(it)
                 }
             }
             file.delete()
@@ -36,10 +36,10 @@ object FileUtil {
         val soFileDir = File(soFileDirPath)
         val targetDir = File(targetDirPath)
         if (soFileDir.exists()) {
-            targetDir.getDirectoryList().forEach { dir ->
-                File(soFileDirPath, dir.name).apply {
+            targetDir.getDirectoryList().forEach {
+                File(soFileDirPath, it.name).apply {
                     if (exists()) {
-                        copyDirTo(dir)
+                        copyDirTo(it)
                     }
                 }
             }
@@ -110,9 +110,9 @@ object FileUtil {
             if (file.exists()) {
                 val list = file.listFiles()
                 if (!list.isNullOrEmpty()) {
-                    list.forEach { f ->
-                        if (f.name.indexOf(filter) != -1) {
-                            delete(f)
+                    list.forEach {
+                        if (it.name.indexOf(filter) != -1) {
+                            delete(it)
                         }
                     }
                 }
@@ -226,14 +226,14 @@ fun File.replace(target: File) {
  */
 fun File.copyDirTo(destDir: File) {
     val files = listFiles()
-    files?.forEach { f ->
-        val file = File(destDir.absolutePath, f.name)
-        if (f.isFile) {
-            println("${f.absolutePath}  -->  ${file.absolutePath}")
-            f.replace(file)
+    files?.forEach {
+        val file = File(destDir.absolutePath, it.name)
+        if (it.isFile) {
+            println("${it.absolutePath}  -->  ${file.absolutePath}")
+            it.replace(file)
         } else {
             file.mkdirs()
-            f.copyDirTo(file)
+            it.copyDirTo(file)
         }
     }
 }
@@ -243,9 +243,9 @@ fun File.copyDirTo(destDir: File) {
  */
 fun File.getDirectoryList(): List<File> {
     val folders = mutableListOf<File>()
-    listFiles()?.forEach { f ->
-        if (f.isDirectory) {
-            folders.add(f)
+    listFiles()?.forEach {
+        if (it.isDirectory) {
+            folders.add(it)
         }
     }
     return folders

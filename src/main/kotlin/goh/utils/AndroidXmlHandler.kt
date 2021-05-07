@@ -48,22 +48,32 @@ object AndroidXmlHandler {
      * 获取主 Activity 设置的屏幕方向
      */
     private fun getMainActivityScreenOrientation(androidManifest: File): String? {
-        SAXReader().read(androidManifest).rootElement.element("application").elements("activity").forEach { activityNode ->
-            activityNode.element("intent-filter")?.apply {
-                elements("action").forEach { actionNode ->
-                    if (actionNode.attributeValue("name") == "android.intent.action.MAIN") {    // 存在该 Action 即可认为是主 Activity
-                        return activityNode.attributeValue("screenOrientation")
+        SAXReader().read(androidManifest)
+            .rootElement
+            .element("application")
+            .elements("activity")
+            .forEach { activityNode ->
+                activityNode.element("intent-filter")?.apply {
+                    elements("action").forEach { actionNode ->
+                        if (actionNode.attributeValue("name") == "android.intent.action.MAIN") {    // 存在该 Action 即可认为是主 Activity
+                            return activityNode.attributeValue("screenOrientation")
+                        }
                     }
                 }
             }
-        }
         return null
     }
 
     /**
      * 三方登录需要设置的 AndroidManifest
      */
-    fun setThirdPartyLoginManifest(decompileDir: String, loginType: String, qqAppId: String, weChatAppId: String, packageName: String) {
+    fun setThirdPartyLoginManifest(
+        decompileDir: String,
+        loginType: String,
+        qqAppId: String,
+        weChatAppId: String,
+        packageName: String
+    ) {
         val qq = """
             <activity 
                 android:name="com.tencent.tauth.AuthActivity"
@@ -92,12 +102,14 @@ object AndroidXmlHandler {
 				android:launchMode="singleTask" />
         """.trimIndent()
 
-        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", when (loginType) {
-            "1" -> weChat
-            "2" -> qq
-            "3" -> qq + weChat
-            else -> ""
-        } + "</application>")
+        replaceXmlEndTag(
+            File(decompileDir, "AndroidManifest.xml"), "</application>", when (loginType) {
+                "1" -> weChat
+                "2" -> qq
+                "3" -> qq + weChat
+                else -> ""
+            } + "</application>"
+        )
     }
 
     /**
@@ -412,25 +424,26 @@ object AndroidXmlHandler {
                 </style>
             </resources>
         """.trimIndent()
-        val file = File(decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "styles.xml")
+        val file =
+            File(decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "styles.xml")
         replaceXmlEndTag(file, "</resources>", content)
     }
 
     fun updateGameConfig(decompileDir: String, params: Map<String, String>) {
         val file = File(decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml")
         val document = SAXReader().read(file)
-        params.forEach { (key, value) ->
-            when (key) {
+        params.forEach {
+            when (it.key) {
                 "pkid" -> {
-                    document.rootElement.element("pkid").text = value
-                    document.rootElement.element("kpid").text = value
+                    document.rootElement.element("pkid").text = it.value
+                    document.rootElement.element("kpid").text = it.value
                 }
                 "version", "platform", "appid", "channel", "adid", "pcid", "packtype", "register_ratio", "purchase_ratio" -> {
-                    val element = document.rootElement.element(key)
+                    val element = document.rootElement.element(it.key)
                     if (element == null) {
-                        document.rootElement.addElement(key).text = value
+                        document.rootElement.addElement(it.key).text = it.value
                     } else {
-                        element.text = value
+                        element.text = it.value
                     }
                 }
             }

@@ -37,26 +37,23 @@ class Game137(apk: String) : Game(apk) {
     override fun patchChannelFile(patchFile: String) {
         if (patchFile.isBlank()) {
             println("$patchFile File path is empty")
-        } else {
-            File(patchFile).getDirectoryList().forEach { dir ->
-                when (dir.name) {
-                    "assets", "res" -> File(patchFile, dir.name).copyDirTo(File(decompileDir, dir.name))
-                    "smali", "smali_classes2" -> File(patchFile, "smali").copyDirTo(File(decompileDir, "smali_classes2"))
-                    "so" -> FileUtil.copySoLib(
-                            patchFile + File.separator + "so",
-                            decompileDir + File.separator + "lib"
-                    )
-                }
+            return
+        }
+        File(patchFile).getDirectoryList().forEach {
+            when (it.name) {
+                "assets", "res" -> File(patchFile, it.name).copyDirTo(File(decompileDir, it.name))
+                "smali", "smali_classes2" -> File(patchFile, it.name).copyDirTo(File(decompileDir, "smali_classes2"))
+                "so" -> FileUtil.copySoLib(patchFile + File.separator + "so", decompileDir + File.separator + "lib")
             }
         }
     }
 
     override fun generateSignedApk(
-            keyStorePath: String,
-            generatePath: String,
-            gid: String,
-            appVersion: String,
-            channelAbbr: String
+        keyStorePath: String,
+        generatePath: String,
+        gid: String,
+        appVersion: String,
+        channelAbbr: String
     ): Boolean {
         return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "xxsy")
     }
