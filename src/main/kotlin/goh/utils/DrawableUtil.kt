@@ -7,10 +7,12 @@ import javax.imageio.ImageIO
 object DrawableUtil {
 
     fun replaceIcon(decompileDir: String, icon: File, sizeTag: String, iconName: String) {
-        val mipmap = decompileDir + File.separator + "res" + File.separator + "mipmap-" + sizeTag + File.separator + iconName
+        val mipmap =
+            decompileDir + File.separator + "res" + File.separator + "mipmap-" + sizeTag + File.separator + iconName
         icon.replace(File(mipmap))
 
-        val drawable = decompileDir + File.separator + "res" + File.separator + "drawable-" + sizeTag + File.separator + iconName
+        val drawable =
+            decompileDir + File.separator + "res" + File.separator + "drawable-" + sizeTag + File.separator + iconName
         icon.replace(File(drawable))
 
         val drawableV4 = decompileDir + File.separator + "res" + File.separator + "drawable-" + sizeTag + "-v4"
@@ -48,12 +50,12 @@ object DrawableUtil {
      * 替换主体 LOGO 资源
      */
     fun replaceCoDrawable(decompileDir: String, coDrawableDir: String) {
-        File(coDrawableDir).getDirectoryList().forEach { dir ->
-            when (dir.name) {
+        File(coDrawableDir).getDirectoryList().forEach {
+            when (it.name) {
                 "drawable-hdpi", "drawable-xhdpi", "drawable-xxhdpi" -> {
-                    val destDir = File(decompileDir + File.separator + "res" + File.separator + dir.name)
-                    dir.copyDirTo(destDir)
-                    println("--> ${dir.name} 素材替换完成")
+                    val destDir = File(decompileDir + File.separator + "res" + File.separator + it.name)
+                    it.copyDirTo(destDir)
+                    println("--> ${it.name} 素材替换完成")
                 }
             }
         }
