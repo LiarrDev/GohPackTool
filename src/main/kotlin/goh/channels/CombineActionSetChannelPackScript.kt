@@ -3,6 +3,7 @@ package goh.channels
 import goh.games.*
 import goh.utils.PropertiesUtil
 import java.io.File
+import java.time.LocalDateTime
 
 /**
  * 行为数据源通用打包脚本
@@ -11,6 +12,7 @@ import java.io.File
  */
 fun main(vararg args: String) {
     println("通用行为数据源打包任务开始...")
+    println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
     val generatePath = args[1]              // 生成的 Apk 路径
@@ -88,8 +90,8 @@ fun main(vararg args: String) {
     """.trimIndent()
     )
 
+    val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {
-        val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)

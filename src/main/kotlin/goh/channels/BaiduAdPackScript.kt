@@ -3,13 +3,15 @@ package goh.channels
 import goh.games.*
 import goh.utils.PropertiesUtil
 import java.io.File
+import java.time.LocalDateTime
 
 /**
  * 百度 SDK 渠道打包脚本
  * TODO: 可与广点通联盟脚本合并
  */
-fun main(vararg  args:String) {
+fun main(vararg args: String) {
     println("百度 SDK 渠道打包任务开始...")
+    println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
     val generatePath = args[1]              // 生成的 Apk 路径
@@ -46,7 +48,7 @@ fun main(vararg  args:String) {
     val wxLoginPatch = args[28]             // 微信登录注入文件
 
     println(
-            """
+        """
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
@@ -87,8 +89,8 @@ fun main(vararg  args:String) {
     """.trimIndent()
     )
 
+    val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {
-        val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)
@@ -101,23 +103,25 @@ fun main(vararg  args:String) {
         gameConfig(sdkVersion, pkId)
         patchChannelFile(channelFile)
         thirdPartyLogin(
-                loginType,
-                thirdPartyBasePatch,
-                qqLoginPatch,
-                qqAppId,
-                wxApiPath,
-                wxLoginPatch,
-                wxAppId,
-                packageName
+            loginType,
+            thirdPartyBasePatch,
+            qqLoginPatch,
+            qqAppId,
+            wxApiPath,
+            wxLoginPatch,
+            wxAppId,
+            packageName
         )
         channelConfig(channelTag, "", "")
         extra {
             // TODO: 后面可以整合到 ZSmultil 文件内
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "BaiduConf.ini"))
-                    .setProperties(mapOf(
-                            "userActionSetID" to channelUserActionSetID,
-                            "appSecretKey" to channelAppSecretKey
-                    ))
+                .setProperties(
+                    mapOf(
+                        "userActionSetID" to channelUserActionSetID,
+                        "appSecretKey" to channelAppSecretKey
+                    )
+                )
         }
         setPackType(packType)
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {

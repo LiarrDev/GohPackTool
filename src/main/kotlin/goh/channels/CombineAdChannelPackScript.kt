@@ -2,6 +2,7 @@ package goh.channels
 
 import goh.games.*
 import java.io.File
+import java.time.LocalDateTime
 
 /**
  * 普通买量渠道通用打包脚本
@@ -9,6 +10,7 @@ import java.io.File
  */
 fun main(vararg args: String) {
     println("通用买量渠道打包任务开始...")
+    println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
     val generatePath = args[1]              // 生成的 Apk 路径

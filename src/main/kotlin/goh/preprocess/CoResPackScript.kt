@@ -42,7 +42,8 @@ fun main(vararg args: String) {
         .setProperties(
             mapOf(
                 "registerType" to coType,           // 设置主体类型
-                "phone_auth_package" to "com.tencent.tmgp.wzjhhb.wzjh"  // 本机号码一键登录包名设置
+//                "phone_auth_package" to "com.tencent.tmgp.wzjhhb.wzjh"  // 本机号码一键登录包名设置
+                "conversion_time" to "1622476800"       // 对 3.2.0.0 版本测试，关闭一键登录，开启测试时间控制
             )
         )
 

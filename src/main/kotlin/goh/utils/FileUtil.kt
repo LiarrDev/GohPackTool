@@ -87,7 +87,7 @@ object FileUtil {
      */
     fun replaceResource(newImagePath: String?, oldImagePath: String): Boolean {
         return if (newImagePath.isNullOrBlank()) {
-            println("文件路径不存在：$newImagePath")
+            println("$newImagePath 文件路径不存在，$oldImagePath 文件保留")
             true
         } else {
             val file = File(newImagePath)

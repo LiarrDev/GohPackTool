@@ -4,12 +4,14 @@ import goh.games.*
 import goh.utils.AndroidXmlHandler
 import goh.utils.PropertiesUtil
 import java.io.File
+import java.time.LocalDateTime
 
 /**
  * OPPO 联运打包脚本
  */
 fun main(vararg args: String) {
     println("OPPO 联运打包任务开始...")
+    println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
     val generatePath = args[1]              // 生成的 Apk 路径
@@ -71,8 +73,8 @@ fun main(vararg args: String) {
     """.trimIndent()
     )
 
+    val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {
-        val decompileDir = generatePath + File.separator + "temp"
         decompile(decompileDir, apktool)
         replaceResource(loginImg, loadingImg, logoImg, splashImg)
         replaceIcon(icon)
