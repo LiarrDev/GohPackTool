@@ -248,13 +248,14 @@ abstract class Game(private val apk: String) {
      */
     fun channelConfig(channelTag: String, channelAppId: String, channelAppName: String, appInfo: String = "0") {
         val map = HashMap<String, String>()
-        map["isReport"] = if ("0" == channelTag) "0" else "1"
         if ("1" == channelTag) {                                    // 头条的 AppId 做加密处理
             map["appId"] = EncryptUtil.encryptAppId(channelAppId)
             map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
         } else {
             map["appId"] = channelAppId
         }
+//        map["isReport"] = if ("0" == channelTag) "0" else "1"
+        map["isReport"] = "1"                                       // 从 SDK V3.2.0.3 起，该字段无论什么渠道都置 1，用于支撑防沉迷系统支付流程的骚操作
         map["appName"] = channelAppName.ifBlank { gameName }
         map["channel"] = "0"                                        // 这个字段暂时没有渠道需要使用（某些渠道可选，但我们暂未使用，头条渠道不能为空）
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本增加
