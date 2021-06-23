@@ -2,6 +2,7 @@ package goh.ad
 
 import goh.utils.*
 import java.io.File
+import java.time.LocalDateTime
 
 /**
  * 广告包打包脚本
@@ -9,6 +10,9 @@ import java.io.File
  */
 fun main(vararg args: String) {
     println("广告包打包任务开始...")
+    println("打包时间：${LocalDateTime.now()}")
+
+    // java -jar $脚本jar $渠道母包Apk $解压操作路径 $广告包文件 $Apktool $keystore $storePass $keyPass $keyAlias $appId $pcId $channelId $adId $注册回传倍率 $付费回传倍率 $重新修改AppName
 
     val apk = args[0]                       // 渠道母包 Apk
     val unzipPath = args[1]                 // 解压操作路径
@@ -31,7 +35,7 @@ fun main(vararg args: String) {
     val appName = args[14]                  // 部分渠道（如百度搜索）可能会重新修改 AppName
 
     println(
-            """
+        """
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
@@ -58,13 +62,13 @@ fun main(vararg args: String) {
     )
 
     val params = mapOf(
-            "appid" to appId,
-            "pcid" to pcId,
-            "channel" to channelId,
-            "adid" to adId,
-            "packtype" to "-1",
-            "register_ratio" to registerRatio,
-            "purchase_ratio" to purchaseRatio
+        "appid" to appId,
+        "pcid" to pcId,
+        "channel" to channelId,
+        "adid" to adId,
+        "packtype" to "-1",
+        "register_ratio" to registerRatio,
+        "purchase_ratio" to purchaseRatio
     )
 
     if (appName.isBlank()) {                // 不需要修改 AppName，可以用解压的方式，提高打包效率
@@ -82,14 +86,20 @@ fun main(vararg args: String) {
         CommandUtil.exec("java -jar $apktool b $unzipPath -o $apk")
     }
 
+    File(releaseApk).apply {
+        if (!File(parent).exists()) {
+            File(parent).mkdirs()
+        }
+    }
+
     try {
         if (!System.getProperty("os.name").contains("Windows")) {       // Linux 可能需要文件操作权限
             CommandUtil.exec("chmod 777 $apk")
         }
         val signCommand = "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $releaseApk $apk $keyAlias"
         if (CommandUtil.exec(signCommand)) {
-            println("签名完成")
             FileUtil.delete(File(unzipPath))
+            println("签名完成")
         } else {
             println("签名失败")
         }

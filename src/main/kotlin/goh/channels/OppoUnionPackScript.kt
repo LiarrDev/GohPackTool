@@ -65,9 +65,9 @@ fun main(vararg args: String) {
             packType = $packType
             channelAppKey = $channelAppKey
             channelAppSecret = $channelAppSecret
-            channelFile = $packType$channelFile
-            channelTag = $packType$channelTag
-            channelAbbr = $packType$channelAbbr
+            channelFile = $channelFile
+            channelTag = $channelTag
+            channelAbbr = $channelAbbr
             
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()

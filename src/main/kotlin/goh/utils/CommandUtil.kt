@@ -13,10 +13,10 @@ object CommandUtil {
         outputStream.start()
 
         return if (process.waitFor() == 0) {
-            println("$command    Command execute succeed.")
+            println("【Command execute succeed】  $command")
             true
         } else {
-            println("$command    Command execute failed.")
+            println("【Command execute failed】   $command")
             false
         }
     }
