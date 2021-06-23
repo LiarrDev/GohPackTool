@@ -71,19 +71,22 @@ fun main(vararg args: String) {
         "purchase_ratio" to purchaseRatio
     )
 
+    val unzipTemp = unzipPath + "temp"
+    val unsignedApk = File(unzipPath, apk.substring(apk.lastIndexOf("/") + 1))
+
     if (appName.isBlank()) {                // 不需要修改 AppName，可以用解压的方式，提高打包效率
-        File(apk).unzipTo(File(unzipPath))
-        val metaInf = File(unzipPath, "META-INF")
+        File(apk).unzipTo(File(unzipTemp))
+        val metaInf = File(unzipTemp, "META-INF")
         if (metaInf.exists()) {
             FileUtil.delete(metaInf)    // 删除签名信息
         }
-        AndroidXmlHandler.updateGameConfig(unzipPath, params)
-        File(unzipPath).zipTo(File(apk))
+        AndroidXmlHandler.updateGameConfig(unzipTemp, params)
+        File(unzipTemp).zipTo(unsignedApk)
     } else {
-        CommandUtil.decompile(apk, unzipPath, apktool)
-        AndroidXmlHandler.setAppName(unzipPath, appName)
-        AndroidXmlHandler.updateGameConfig(unzipPath, params)
-        CommandUtil.exec("java -jar $apktool b $unzipPath -o $apk")
+        CommandUtil.decompile(apk, unzipTemp, apktool)
+        AndroidXmlHandler.setAppName(unzipTemp, appName)
+        AndroidXmlHandler.updateGameConfig(unzipTemp, params)
+        CommandUtil.exec("java -jar $apktool b $unzipTemp -o ${unsignedApk.absolutePath}")
     }
 
     File(releaseApk).apply {
@@ -96,7 +99,8 @@ fun main(vararg args: String) {
         if (!System.getProperty("os.name").contains("Windows")) {       // Linux 可能需要文件操作权限
             CommandUtil.exec("chmod 777 $apk")
         }
-        val signCommand = "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $releaseApk $apk $keyAlias"
+        val signCommand =
+            "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $releaseApk ${unsignedApk.absolutePath} $keyAlias"
         if (CommandUtil.exec(signCommand)) {
             FileUtil.delete(File(unzipPath))
             println("签名完成")
