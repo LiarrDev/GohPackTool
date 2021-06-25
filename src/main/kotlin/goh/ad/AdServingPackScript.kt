@@ -12,10 +12,10 @@ fun main(vararg args: String) {
     println("广告包打包任务开始...")
     println("打包时间：${LocalDateTime.now()}")
 
-    // java -jar $脚本jar $渠道母包Apk $解压操作路径 $广告包文件 $Apktool $keystore $storePass $keyPass $keyAlias $appId $pcId $channelId $adId $注册回传倍率 $付费回传倍率 $重新修改AppName
+    // java -jar $脚本jar $渠道母包Apk $临时操作路径 $广告包文件 $Apktool $keystore $storePass $keyPass $keyAlias $appId $pcId $channelId $adId $注册回传倍率 $付费回传倍率 $重新修改AppName
 
     val apk = args[0]                       // 渠道母包 Apk
-    val unzipPath = args[1]                 // 解压操作路径
+    val cachePath = args[1]                 // 临时操作路径
     val releaseApk = args[2]                // 最终释出的 Apk 文件
     val apktool = args[3]                   // ApkTool 路径
 
@@ -39,7 +39,7 @@ fun main(vararg args: String) {
             ═════════════════════════════════════════════════════════════════╗
             
             apk = $apk
-            unzipPath = $unzipPath
+            cachePath = $cachePath
             releaseApk = $releaseApk
             apktool = $keyStorePath$apktool
             
@@ -71,10 +71,10 @@ fun main(vararg args: String) {
         "purchase_ratio" to purchaseRatio
     )
 
-    val unzipTemp = unzipPath + "temp"
-    val unsignedApk = File(unzipPath, apk.substring(apk.lastIndexOf("/") + 1))
+    val unzipTemp = cachePath + "temp"
+    val unsignedApk = File(cachePath, apk.substring(apk.lastIndexOf("/") + 1))
 
-    if (appName.isBlank()) {                // 不需要修改 AppName，可以用解压的方式，提高打包效率
+    if (appName.isBlank()) {                // 不需要修改 AppName，可以用解压的方式，提高打包效率（如果将单独文件解压出来处理的话可能进一步提高打包效率）
         File(apk).unzipTo(File(unzipTemp))
         val metaInf = File(unzipTemp, "META-INF")
         if (metaInf.exists()) {
@@ -84,7 +84,7 @@ fun main(vararg args: String) {
         File(unzipTemp).zipTo(unsignedApk)
     } else {
         CommandUtil.decompile(apk, unzipTemp, apktool)
-        AndroidXmlHandler.setAppName(unzipTemp, appName)
+        AndroidXmlHandler.setAppName(unzipTemp, appName)        // FIXME: Windows 下可能会由于乱码无法 Build，Linux 下正常
         AndroidXmlHandler.updateGameConfig(unzipTemp, params)
         CommandUtil.exec("java -jar $apktool b $unzipTemp -o ${unsignedApk.absolutePath}")
     }
@@ -102,7 +102,7 @@ fun main(vararg args: String) {
         val signCommand =
             "jarsigner -keystore $keyStorePath -storepass $storePassword -keypass $keyPassword -signedjar $releaseApk ${unsignedApk.absolutePath} $keyAlias"
         if (CommandUtil.exec(signCommand)) {
-            FileUtil.delete(File(unzipPath))
+            FileUtil.delete(File(cachePath))
             println("签名完成")
         } else {
             println("签名失败")
