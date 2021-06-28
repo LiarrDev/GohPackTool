@@ -1,5 +1,6 @@
 package goh.utils
 
+import org.dom4j.Element
 import org.dom4j.io.SAXReader
 import org.dom4j.io.XMLWriter
 import java.io.File
@@ -465,5 +466,27 @@ object AndroidXmlHandler {
         val writer = XMLWriter(FileWriter(file))
         writer.write(document)
         writer.close()
+    }
+
+    /**
+     * 遍历节点更新包名，对于简写式的 android:name=".ClassName" 还需单独处理
+     */
+    fun updatePackageName(node: Element, oldPackageName: String, newPackageName: String){
+        when (node.name) {
+            "application", "activity", "service" -> println("跳过 ${node.name} 节点")
+            else -> {
+                println("遍历 ${node.name} 节点")
+                for (attr in node.attributes()) {
+                    if (attr.value.contains(oldPackageName)) {
+                        println("修改 ${node.name} 节点： ${attr.name}=${attr.value}")
+                        attr.value = attr.value.replace(oldPackageName, newPackageName)
+                        println("    -> ${attr.name}=${attr.value}")
+                    }
+                }
+            }
+        }
+        for (element in node.elements()) {
+            updatePackageName(element, oldPackageName, newPackageName)
+        }
     }
 }

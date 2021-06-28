@@ -5,7 +5,7 @@ import java.io.File
 import java.io.InputStreamReader
 
 object CommandUtil {
-    internal fun exec(command: String): Boolean {
+    fun exec(command: String): Boolean {
         val process: Process = Runtime.getRuntime().exec(command)
         val errorStream = StreamGobbler(process.errorStream, "ERROR")
         val outputStream = StreamGobbler(process.inputStream, "OUTPUT")
@@ -21,7 +21,7 @@ object CommandUtil {
         }
     }
 
-    internal fun decompile(apk:String,decompileDir: String, apktool: String): Boolean {
+    fun decompile(apk: String, decompileDir: String, apktool: String): Boolean {
         val apkFile = File(apk)
         return if (apkFile.exists() && apkFile.isFile) {
             val decompileFile = File(decompileDir)
@@ -34,6 +34,20 @@ object CommandUtil {
             print("APK is not exist.")
             false
         }
+    }
+}
+
+fun String.command(): Boolean {
+    val process = this.execute()
+    StreamGobbler(process.errorStream, "ERROR").start()
+    StreamGobbler(process.inputStream, "OUTPUT").start()
+
+    return if (process.waitFor() == 0) {
+        println("【Command execute succeed】  $this")
+        true
+    } else {
+        println("【Command execute failed】   $this")
+        false
     }
 }
 

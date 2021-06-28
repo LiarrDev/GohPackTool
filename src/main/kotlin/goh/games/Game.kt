@@ -121,7 +121,7 @@ abstract class Game(private val apk: String) {
     }
 
     /**
-     * 修改包名
+     * 修改包名，需要提供包名给研发，否则可能会出错
      */
     fun setPackageName(packageName: String) {
         pkgName = packageName
@@ -141,6 +141,18 @@ abstract class Game(private val apk: String) {
         manifest = manifest.replace("android:name=\"\\.", "android:name=\"$oldPackageName\\.")
 
         file.writeText(manifest)
+
+//        // 由于有研发将包名定为 Application 所在包，原方法会导致游戏不能正常运行出错，出包最好提供包名给研发，现改成遍历替换，效率可能会降低
+//        val file = File(decompileDir + File.separator + "AndroidManifest.xml")
+//        val document = SAXReader().read(file)
+//        val rootElement = document.rootElement
+//        val oldPackageName = rootElement.attributeValue("package")
+//        AndroidXmlHandler.updatePackageName(rootElement, oldPackageName, packageName)
+//        val writer = XMLWriter(FileWriter(file))
+//        writer.write(document)
+//        writer.close()
+//        val manifest = file.readText()
+//        file.writeText(manifest.replace("android:name=\"\\.", "android:name=\"$oldPackageName\\."))   // 这一步有 Bug
     }
 
     /**
