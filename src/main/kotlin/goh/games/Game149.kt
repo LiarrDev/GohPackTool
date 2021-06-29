@@ -10,9 +10,8 @@ import java.io.File
 class Game149(apk: String) : Game(apk) {
 
     /**
-     * 该游戏不能更改 Loading 图
-     * 但是支持修改版号信息
-     * 所以版号信息通过 Loading 图上传
+     * 该游戏支持修改版号信息，路径：/assets/web-mobile-release3/assets/resources/native/6f/6fc4a639-8d40-492b-9196-d3efe4c09fe4.10d56.png
+     * 如有需要，建议直接在母包修改
      */
     override fun replaceResource(loginImage: String?, loadingImage: String?, logoImage: String?, splashImage: String?) {
         val gameLoginImgPath = decompileDir + File.separator +
@@ -36,13 +35,9 @@ class Game149(apk: String) : Game(apk) {
                 "web-mobile-release3" + File.separator +
                 "splash.a387e.jpg"
         val gameLoadingImgPath = decompileDir + File.separator +
-                "assets" + File.separator +
-                "web-mobile-release3" + File.separator +
-                "assets" + File.separator +
-                "resources" + File.separator +
-                "native" + File.separator +
-                "6f" + File.separator +
-                "6fc4a639-8d40-492b-9196-d3efe4c09fe4.10d56.png"
+                "res" + File.separator +
+                "drawable" + File.separator +
+                "bg_splash.jpg"
         FileUtil.replaceResource(loginImage, gameLoginImgPath)
         FileUtil.replaceResource(loadingImage, gameLoadingImgPath)
         FileUtil.replaceResource(logoImage, gameLogoImgPath)
