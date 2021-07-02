@@ -34,6 +34,8 @@ class GameXXX(apk: String) : Game(apk) {
 
 其他方法按需重写。
 
+每创建一个新的游戏要去 `GameFactory` 中注册，并重新编译渠道脚本。
+
 ### Channels
 
 增加渠道时，如果是普通买量广告渠道，可以直接复用 CombineAdPackTool.kt 脚本，如无法复用则另外新建脚本。

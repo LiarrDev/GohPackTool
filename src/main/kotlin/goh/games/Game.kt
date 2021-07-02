@@ -263,6 +263,7 @@ abstract class Game(private val apk: String) {
         if ("1" == channelTag) {                                    // 头条的 AppId 做加密处理
             map["appId"] = EncryptUtil.encryptAppId(channelAppId)
             map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
+            AndroidXmlHandler.setBytedanceManifest(decompileDir)
         } else {
             map["appId"] = channelAppId
         }

@@ -8,7 +8,6 @@ import java.io.FileWriter
 import java.util.*
 import java.util.regex.Pattern
 
-
 object AndroidXmlHandler {
 
     /**
@@ -111,6 +110,31 @@ object AndroidXmlHandler {
                 else -> ""
             } + "</application>"
         )
+    }
+
+    /**
+     * 头条的 AndroidManifest 设置
+     */
+    fun setBytedanceManifest(decompileDir: String) {
+        val content = """
+            <activity android:name="com.bytedance.applog.util.SimulateLaunchActivity">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <data
+                        android:host="rangersapplog"
+                        android:path="/picker"
+                        android:scheme="rangersapplog.byax6uyt" />
+                </intent-filter>
+            </activity>
+            <receiver
+                android:name="com.bytedance.applog.collector.Collector"
+                android:enabled="true"
+                android:exported="false" />
+            </application>
+        """.trimIndent()
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
     }
 
     /**
@@ -471,7 +495,7 @@ object AndroidXmlHandler {
     /**
      * 遍历节点更新包名，对于简写式的 android:name=".ClassName" 还需单独处理
      */
-    fun updatePackageName(node: Element, oldPackageName: String, newPackageName: String){
+    fun updatePackageName(node: Element, oldPackageName: String, newPackageName: String) {
         when (node.name) {
             "application", "activity", "service" -> println("跳过 ${node.name} 节点")
             else -> {
