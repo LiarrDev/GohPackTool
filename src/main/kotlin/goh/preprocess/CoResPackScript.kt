@@ -51,5 +51,6 @@ fun main(vararg args: String) {
     SmaliHandler.setUrlCoPrefix(decompileDir, urlCoPrefix, defaultCoType)
     SmaliHandler.setRegisterAccountPrefix(decompileDir, urlCoPrefix, defaultCoType)
     SmaliHandler.setCoShareText(decompileDir, coText, defaultCoType)
+    SmaliHandler.setCoContract(decompileDir, defaultCoType, urlCoPrefix)
     SmaliHandler.setCoDomain(decompileDir, File(coDomainJson).readText(), defaultCoType)
 }
