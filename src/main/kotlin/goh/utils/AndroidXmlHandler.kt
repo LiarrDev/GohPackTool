@@ -45,6 +45,14 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 获取 SDK 版本号
+     */
+    fun getSdkVersion(decompileDir: String): String {
+        val file = File(decompileDir + File.separator + "assets" + File.separator + "ZSinfo.xml")
+        return SAXReader().read(file).rootElement.element("version").text
+    }
+
+    /**
      * 获取主 Activity 设置的屏幕方向
      */
     private fun getMainActivityScreenOrientation(androidManifest: File): String? {

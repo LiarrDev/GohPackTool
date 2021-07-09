@@ -250,9 +250,10 @@ object SmaliHandler {
                         + File.separator + "OutilString.smali"
             )
         }
-        var smali = file.readText()
-        smali = smali.replace("user_agreement_$defaultSuffix.html", "user_agreement_$coSuffix.html")
-        smali = smali.replace("reivacy_agreement_$defaultSuffix.html", "reivacy_agreement_$coSuffix.html")
+
+        val smali = file.readText()
+            .replace("user_agreement_$defaultSuffix.html", "user_agreement_$coSuffix.html")
+            .replace("reivacy_agreement_$defaultSuffix.html", "reivacy_agreement_$coSuffix.html")
         file.writeText(smali)
         println("--> 修改协议链接完成")
     }
