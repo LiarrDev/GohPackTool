@@ -7,12 +7,12 @@ import java.time.LocalDateTime
 /**
  * 广告包打包脚本
  * 所有市场投放包和运营包都需使用该脚本注入参数才可提供给玩家
+ *
+ * Usage: java -jar $脚本jar $渠道母包Apk $临时操作路径 $广告包文件 $Apktool $keystore $storePass $keyPass $keyAlias $appId $pcId $channelId $adId $注册回传倍率 $付费回传倍率 $重新修改AppName $一键登录包名
  */
 fun main(vararg args: String) {
     println("广告包打包任务开始...")
     println("打包时间：${LocalDateTime.now()}")
-
-    // java -jar $脚本jar $渠道母包Apk $临时操作路径 $广告包文件 $Apktool $keystore $storePass $keyPass $keyAlias $appId $pcId $channelId $adId $注册回传倍率 $付费回传倍率 $重新修改AppName
 
     val apk = args[0]                       // 渠道母包 Apk
     val cachePath = args[1]                 // 临时操作路径
