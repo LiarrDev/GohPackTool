@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 /**
  * 普通买量渠道通用打包脚本
- * 目前可用渠道包括：原包、头条、UC、快手、爱奇艺、搜狗搜索
+ * 目前可用渠道包括：原包、头条、UC、快手、爱奇艺、搜狗搜索、星图
  */
 fun main(vararg args: String) {
     println("通用买量渠道打包任务开始...")
@@ -34,7 +34,7 @@ fun main(vararg args: String) {
     val channelAppId = args[16]             // 渠道 AppId
     val channelAppName = args[17]           // 渠道 AppName
     val channelFile = args[18]              // 渠道注入文件路径
-    val channelTag = args[19]               // 渠道标记，0：无，1：头条，2：UC，3：快手，4：爱奇艺；即 0 为无 SDK，非 0 递增为有 SDK
+    val channelTag = args[19]               // 渠道标记，0：无，1：头条，2：UC，3：快手，4：爱奇艺，5：星图；即 0 为无 SDK，非 0 递增为有 SDK
     val channelAbbr = args[20]              // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
     val packType = args[21]                 // 母包类型，和后台打包配置 ID 一致
 
