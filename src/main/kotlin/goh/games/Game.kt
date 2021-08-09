@@ -267,7 +267,6 @@ abstract class Game(private val apk: String) {
         } else {
             map["appId"] = channelAppId
         }
-        map["open_delay"] = if ("5" == channelTag) "1" else "0"     // 星图需要延迟初始化
 
 //        map["isReport"] = if ("0" == channelTag) "0" else "1"
         map["isReport"] = "1"                                       // 从 SDK V3.2.0.3 起，该字段无论什么渠道都置 1，用于支撑防沉迷系统支付流程的骚操作
