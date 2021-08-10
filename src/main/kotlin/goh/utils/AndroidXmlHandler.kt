@@ -501,6 +501,15 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 由于 SDK 目前最高兼容至 API 29，所以高于 29 的需要降级
+     * @see goh.games.Game148
+     */
+    fun downgradeTargetSdkVersion(decompileDir: String) {
+        val yaml = File(decompileDir, "apktool.yml")
+        yaml.writeText(yaml.readText().replace("targetSdkVersion: '30'", "targetSdkVersion: '29'"))
+    }
+
+    /**
      * 遍历节点更新包名，对于简写式的 android:name=".ClassName" 还需单独处理
      */
     fun updatePackageName(node: Element, oldPackageName: String, newPackageName: String) {

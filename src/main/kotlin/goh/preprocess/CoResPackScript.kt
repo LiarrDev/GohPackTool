@@ -46,6 +46,7 @@ fun main(vararg args: String) {
                 "conversion_time" to "1635609600"       // 转化率日志测试期限
             )
         )
+    AndroidXmlHandler.downgradeTargetSdkVersion(decompileDir)
 
     FileUtil.copySpareDomainsFile(decompileDir, switchDomainFile)
     SmaliHandler.setUrlCoPrefix(decompileDir, urlCoPrefix, defaultCoType)
