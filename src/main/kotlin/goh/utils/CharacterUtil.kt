@@ -8,7 +8,7 @@ import kotlin.math.max
 fun String.toUnicode(): String {
     val builder = StringBuilder()
     for (i in this.iterator()) {
-        val s = i.toInt()
+        val s = i.code
         if (s in 19968..171941) {
             builder.append("\\u").append(Integer.toHexString(s))
         } else {
