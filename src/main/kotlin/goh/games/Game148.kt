@@ -1,5 +1,8 @@
 package goh.games
 
+import goh.utils.FileUtil
+import java.io.File
+
 /**
  * GID: 148
  * 疾风忍者
@@ -11,6 +14,8 @@ package goh.games
  */
 class Game148(apk: String) : Game(apk) {
     override fun replaceResource(loginImage: String?, loadingImage: String?, logoImage: String?, splashImage: String?) {
+        val gameLogoImgPath = decompileDir + File.separator + "assets" + File.separator + "l_logo.png"
+        FileUtil.replaceResource(logoImage, gameLogoImgPath)
     }
 
     override fun generateSignedApk(
