@@ -36,7 +36,7 @@ fun main(vararg args: String) {
     val channelUserActionSetID = args[16]   // 渠道行为数据源 ID
     val channelAppSecretKey = args[17]      // 渠道数据接入密钥
     val channelFile = args[18]              // 渠道注入文件路径
-    val channelTag = args[19]               // 渠道标记，5：广点通，6：百度
+    val channelTag = args[19]               // 渠道标记，6：百度，7：广点通
     val channelAbbr = args[20]              // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
     val packType = args[21]                 // 母包类型，和后台打包配置 ID 一致
 

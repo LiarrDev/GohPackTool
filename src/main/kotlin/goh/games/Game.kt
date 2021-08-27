@@ -257,6 +257,7 @@ abstract class Game(private val apk: String) {
 
     /**
      * 渠道配置
+     * @param channelTag 渠道标记。0：无渠道 SDK，1：头条，2：UC，3：快手，4：爱奇艺，5：星图，6：百度，7：广点通，8：小米，9：OPPO，10：ViVO，11：应用宝
      */
     fun channelConfig(channelTag: String, channelAppId: String, channelAppName: String, appInfo: String = "0") {
         val map = HashMap<String, String>()
