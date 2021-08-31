@@ -2,6 +2,8 @@ package goh.preprocess
 
 import goh.utils.*
 import java.io.File
+import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * 主体预处理脚本
@@ -45,7 +47,11 @@ fun main(vararg args: String) {
             mapOf(
                 "registerType" to coType,           // 设置主体类型
                 "phone_auth_package" to authLoginPackageName,  // 本机号码一键登录包名设置 com.tencent.tmgp.wzjhhb.wzjh
-                "conversion_time" to "1672502399"       // 转化率日志测试期限 2022-12-31 23:59:59
+                "conversion_time" to LocalDate.of(2023, 1, 1)   // 转化率日志测试期限
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant()
+                    .epochSecond
+                    .toString()
             )
         )
     AndroidXmlHandler.downgradeTargetSdkVersion(decompileDir)
