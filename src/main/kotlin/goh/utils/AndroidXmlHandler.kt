@@ -510,6 +510,42 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 修改 AndroidManifest.xml 中 android:label 的值
+     */
+    fun setApplicationLabel(manifest: File) {
+        val document = SAXReader().read(manifest)
+        val application = document.rootElement.element("application")
+        application.attribute("label").text = "@string/app_name"
+        application.elements("activity").forEach {
+            it.attribute("label")?.text = "@string/app_name"
+        }
+        val writer = XMLWriter(FileWriter(manifest))
+        writer.write(document)
+        writer.close()
+    }
+
+    /**
+     * 修改 AndroidManifest.xml 中 android:theme 的值
+     */
+    fun setApplicationTheme(manifest: File) {
+        val sdkTheme = "@android:style/Theme.Light.NoTitleBar.Fullscreen"
+        val document = SAXReader().read(manifest)
+        val application = document.rootElement.element("application")
+        application.attribute("theme")?.text = sdkTheme
+        application.elements("activity").forEach { activity ->
+            activity.element("intent-filter")?.elements("action")?.forEach { action ->
+                if ("android.intent.action.MAIN" == action.attribute("name").text) {
+                    activity.attribute("theme")?.text = sdkTheme
+                }
+            }
+        }
+
+        val writer = XMLWriter(FileWriter(manifest))
+        writer.write(document)
+        writer.close()
+    }
+
+    /**
      * 遍历节点更新包名，对于简写式的 android:name=".ClassName" 还需单独处理
      */
     fun updatePackageName(node: Element, oldPackageName: String, newPackageName: String) {
