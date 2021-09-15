@@ -257,7 +257,7 @@ abstract class Game(private val apk: String) {
 
     /**
      * 渠道配置
-     * @param channelTag 渠道标记。0：无渠道 SDK，1：头条，2：UC，3：快手，4：爱奇艺，5：星图，6：百度，7：广点通，8：小米，9：OPPO，10：ViVO，11：应用宝
+     * @param channelTag 渠道标记。0：无渠道 SDK，1：头条，2：UC，3：快手，4：爱奇艺，5：星图，6：百度，7：广点通，8：小米，9：OPPO，10：ViVO，11：应用宝，12：大蓝
      */
     fun channelConfig(channelTag: String, channelAppId: String, channelAppName: String, appInfo: String = "0") {
         val map = HashMap<String, String>()
@@ -276,7 +276,8 @@ abstract class Game(private val apk: String) {
         map["appinfo"] = if (appInfo == "1") "1" else "0"           // 获取应用列表。现在都不获取了所以默认置 0，但留了方法，需要再在脚本增加
         map["issplash"] = "0"                                       // 是否开启闪屏。代号黎明必须关闪屏，否则会有按键冲突，现在所有游戏都关
 
-        PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil")).setProperties(map)
+        PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
+            .setProperties(map)
     }
 
     /**

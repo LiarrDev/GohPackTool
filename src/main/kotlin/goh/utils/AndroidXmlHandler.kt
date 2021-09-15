@@ -20,9 +20,7 @@ object AndroidXmlHandler {
         if (!endTag.startsWith("</") && !endTag.endsWith(">")) {
             throw InputMismatchException("$endTag is not an End-Tag")
         }
-        var s = xml.readText()
-        s = s.replace(endTag, replaceWith)
-        xml.writeText(s)
+        xml.writeText(xml.readText().replace(endTag, replaceWith))
     }
 
     /**
@@ -65,6 +63,26 @@ object AndroidXmlHandler {
                     elements("action").forEach { actionNode ->
                         if (actionNode.attributeValue("name") == "android.intent.action.MAIN") {    // 存在该 Action 即可认为是主 Activity
                             return activityNode.attributeValue("screenOrientation")
+                        }
+                    }
+                }
+            }
+        return null
+    }
+
+    /**
+     * 获取主 Activity 的 android:name
+     */
+    private fun getMainActivityName(androidManifest: File): String? {
+        SAXReader().read(androidManifest)
+            .rootElement
+            .element("application")
+            .elements("activity")
+            .forEach { activityNode ->
+                activityNode.element("intent-filter")?.apply {
+                    elements("action").forEach { actionNode ->
+                        if (actionNode.attributeValue("name") == "android.intent.action.MAIN") {    // 存在该 Action 即可认为是主 Activity
+                            return activityNode.attributeValue("name")
                         }
                     }
                 }
@@ -457,9 +475,162 @@ object AndroidXmlHandler {
                 </style>
             </resources>
         """.trimIndent()
-        val file =
-            File(decompileDir + File.separator + "res" + File.separator + "values" + File.separator + "styles.xml")
+        val file = File(
+            decompileDir + File.separator +
+                    "res" + File.separator +
+                    "values" + File.separator +
+                    "styles.xml"
+        )
         replaceXmlEndTag(file, "</resources>", content)
+    }
+
+    /**
+     * 大蓝联运的 AndroidManifest 设置
+     */
+    fun setDalanManifest(
+        decompileDir: String,
+        channelAppId: String,
+        channelAppKey: String,
+        channelGameId: String,
+        channelChannelId: String,
+        channelGameChannelId: String
+    ) {
+        val file = File(decompileDir, "AndroidManifest.xml")
+        val content = """
+                <activity
+                    android:name="com.dalan.dl_assembly.SplashScreenActivity"
+                    android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode"
+                    android:launchMode="standard"
+                    android:screenOrientation="${getMainActivityScreenOrientation(file)}"
+                    android:stateNotNeeded="true"
+                    android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                    <meta-data
+                        android:name="dalan_union_main_activity"
+                        android:value="${getMainActivityName(file)}" />
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+                <activity
+                    android:name="com.alipay.sdk.app.H5PayActivity"
+                    android:configChanges="orientation|keyboardHidden|navigation"
+                    android:exported="false"
+                    android:screenOrientation="behind" />
+                <activity
+                    android:name="com.alipay.sdk.auth.AuthActivity"
+                    android:configChanges="orientation|keyboardHidden|navigation"
+                    android:exported="false"
+                    android:screenOrientation="behind" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.LoginActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:launchMode="singleTask"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.ProtocolActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.BindTelActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.SetPwdActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.SmsLoginActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.ExitActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.ExitPushActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.AutoActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.LoginSucActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.pay.PayActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.GameNoticeActivity01"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.activity.AccountScreenActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <activity
+                    android:name="com.dalan_template.usercenter.ui.UserCenterActivity"
+                    android:configChanges="keyboardHidden|orientation|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+                    android:windowSoftInputMode="adjustResize" />
+                <activity
+                    android:name="com.dalan_template.darkhorse_ui.pay.NativePayActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:screenOrientation="behind"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+                <service android:name="com.dalan_template.darkhorse_ui.service.AnalysisService" />
+                <service android:name="com.dalan_template.usercenter.widget.FloatWindowService" />
+                <meta-data
+                    android:name="DL_CHANNEL_ID"
+                    android:value="$channelChannelId" />
+                <meta-data
+                    android:name="DL_GAME_CHANNEL_ID"
+                    android:value="$channelGameChannelId" />
+                <meta-data
+                    android:name="DL_UNION_DEBUG"
+                    android:value="true" />
+                <meta-data
+                    android:name="DL_GAME_ID"
+                    android:value="$channelGameId" />
+                <meta-data
+                    android:name="DL_APPID"
+                    android:value="$channelAppId" />
+                <meta-data
+                    android:name="DL_APPKEY"
+                    android:value="$channelAppKey" />
+                <meta-data
+                    android:name="DALAN Channel"
+                    android:value="111" />
+            </application>
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+            <uses-permission android:name="org.simalliance.openmobileapi.SMARTCARD" />
+        """.trimIndent()
+
+        // 删除原主 Activity 的 LAUNCHER
+        file.writeText(
+            file.readText()
+                .replace("<category android:name=\"android.intent.category.LAUNCHER\"/>", "")
+        )
+
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
     }
 
     fun updateGameConfig(decompileDir: String, params: Map<String, String>) {

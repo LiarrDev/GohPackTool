@@ -1,16 +1,16 @@
 package goh.channels
 
-import goh.games.*
+import goh.games.GameFactory
 import goh.utils.AndroidXmlHandler
-import goh.utils.PropertiesUtil
 import java.io.File
 import java.time.LocalDateTime
 
 /**
- * 小米联运打包脚本
+ * 大蓝联运打包脚本
+ * NOTE: 大蓝 SDK 目前最高支持 API 28，我方最高支持 API 29，视母包情况可能需要降级
  */
 fun main(vararg args: String) {
-    println("小米 联运打包任务开始...")
+    println("大蓝 联运打包任务开始...")
     println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
@@ -33,11 +33,14 @@ fun main(vararg args: String) {
     val splashImg = args[15]                // 闪屏路径
 
     val packType = args[16]                 // 母包类型，和后台打包配置 ID 一致
-    val channelAppId = args[17]             // 小米 AppId
-    val channelAppKey = args[18]            // 小米 AppKey
-    val channelFile = args[19]              // 渠道注入文件路径
-    val channelTag = "8"                    // 渠道标记，8：小米
-    val channelAbbr = "Mi"                  // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
+    val channelAppId = args[17]             // 大蓝 AppId
+    val channelAppKey = args[18]            // 大蓝 AppKey
+    val channelGameId = args[19]            // 大蓝 Game ID
+    val channelChannelId = args[20]         // 大蓝 Channel ID
+    val channelGameChannelId = args[21]     // 大蓝 Game Channel ID
+    val channelFile = args[22]              // 渠道注入文件路径
+    val channelTag = "12"                   // 渠道标记，12：大蓝
+    val channelAbbr = "Dalan"               // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
 
     println(
         """
@@ -65,6 +68,9 @@ fun main(vararg args: String) {
             packType = $packType
             channelAppId = $channelAppId
             channelAppKey = $channelAppKey
+            channelGameId = $channelGameId
+            channelChannelId = $channelChannelId
+            channelGameChannelId = $channelGameChannelId
             channelFile = $channelFile
             channelTag = $channelTag
             channelAbbr = $channelAbbr
@@ -84,19 +90,19 @@ fun main(vararg args: String) {
             }
         )
         setPackageName(packageName)
-        gameConfig(sdkVersion, pkId, "8")
+        gameConfig(sdkVersion, pkId, "174")
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
         extra {
-            AndroidXmlHandler.setMiManifest(decompileDir, packageName)
-            PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "mi_config.ini"))
-                .setProperties(
-                    mapOf(
-                        "mi_app_id" to channelAppId,
-                        "mi_app_key" to channelAppKey
-                    )
-                )
+            AndroidXmlHandler.setDalanManifest(
+                decompileDir,
+                channelAppId,
+                channelAppKey,
+                channelGameId,
+                channelChannelId,
+                channelGameChannelId
+            )
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()

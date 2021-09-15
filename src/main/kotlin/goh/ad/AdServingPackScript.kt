@@ -33,7 +33,6 @@ fun main(vararg args: String) {
     val purchaseRatio = args[13]            // 付费回传倍率，默认是 1
 
     val appName = args[14]                  // 部分渠道（如百度搜索）可能会重新修改 AppName
-//    val authLoginPackage = args[15]         // 阿里云手机号码一键登录包名
 
     println(
         """
@@ -83,21 +82,11 @@ fun main(vararg args: String) {
             FileUtil.delete(metaInf)    // 删除签名信息
         }
         AndroidXmlHandler.updateGameConfig(unzipTemp, params)
-//        val sdkVersion = AndroidXmlHandler.getSdkVersion(unzipTemp)
-//        if (compareVersion(sdkVersion, "3.2.0.5") >= 0) {   // 版本大于 3.2.0.5 才支持一键登录
-//            PropertiesUtil(File(unzipTemp + File.separator + "assets" + File.separator + "ZSmultil"))
-//                .setProperties(mapOf("phone_auth_package" to authLoginPackage))
-//        }
         File(unzipTemp).zipTo(unsignedApk)
     } else {
         CommandUtil.decompile(apk, unzipTemp, apktool)
         AndroidXmlHandler.setAppName(unzipTemp, appName)        // FIXME: Windows 下可能会由于乱码无法 Build，Linux 下正常
         AndroidXmlHandler.updateGameConfig(unzipTemp, params)
-//        val sdkVersion = AndroidXmlHandler.getSdkVersion(unzipTemp)
-//        if (compareVersion(sdkVersion, "3.2.0.5") >= 0) {   // 版本不小于 3.2.0.5 才支持一键登录
-//            PropertiesUtil(File(unzipTemp + File.separator + "assets" + File.separator + "ZSmultil"))
-//                .setProperties(mapOf("phone_auth_package" to authLoginPackage))
-//        }
         CommandUtil.exec("java -jar $apktool b $unzipTemp -o ${unsignedApk.absolutePath}")
     }
 
