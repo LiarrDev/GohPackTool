@@ -2,6 +2,7 @@ package goh.channels
 
 import goh.games.GameFactory
 import goh.utils.AndroidXmlHandler
+import goh.utils.FileUtil
 import java.io.File
 import java.time.LocalDateTime
 
@@ -103,6 +104,7 @@ fun main(vararg args: String) {
                 channelChannelId,
                 channelGameChannelId
             )
+            FileUtil.deleteAuthLoginMethod(decompileDir)
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()

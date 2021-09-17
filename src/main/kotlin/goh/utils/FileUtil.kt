@@ -2,7 +2,6 @@ package goh.utils
 
 import org.w3c.dom.Document
 import java.io.File
-import java.nio.file.Files
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
@@ -102,23 +101,27 @@ object FileUtil {
     }
 
     /**
-     * 删除原平台支付，因为某些联运渠道禁止使用非联运支付方式
+     * 从目录中删除文件名符合规则的文件
+     * @param dir 目录
+     * @param filter 只要文件名包含此字符串就可删除
      */
-    fun deleteOriginPayMethod(decompileDir: String) {
-        val filter = "PayWebDialog"
-        fun deletePayDialogFrom(file: File) {
-            if (file.exists()) {
-                val list = file.listFiles()
-                if (!list.isNullOrEmpty()) {
-                    list.forEach {
-                        if (it.name.indexOf(filter) != -1) {
-                            delete(it)
-                        }
+    private fun deleteFileInDir(dir: File, filter: String) {
+        if (dir.exists() && dir.isDirectory) {
+            val list = dir.listFiles()
+            if (!list.isNullOrEmpty()) {
+                list.forEach {
+                    if (it.name.indexOf(filter) != -1) {
+                        delete(it)
                     }
                 }
             }
         }
+    }
 
+    /**
+     * 删除原平台支付，因为某些联运渠道禁止使用非联运支付方式
+     */
+    fun deleteOriginPayMethod(decompileDir: String) {
         val ryPayWebDialog1 = File(
             decompileDir
                     + File.separator + "smali"
@@ -149,12 +152,36 @@ object FileUtil {
                     + File.separator + "view"
                     + File.separator + "com"
         )
-        deletePayDialogFrom(ryPayWebDialog1)
-        deletePayDialogFrom(ryPayWebDialog2)
-        deletePayDialogFrom(payWebDialog1)
-        deletePayDialogFrom(payWebDialog2)
+        val filter = "PayWebDialog"
+        deleteFileInDir(ryPayWebDialog1, filter)
+        deleteFileInDir(ryPayWebDialog2, filter)
+        deleteFileInDir(payWebDialog1, filter)
+        deleteFileInDir(payWebDialog2, filter)
         delete(File(decompileDir + File.separator + "smali" + File.separator + "com" + File.separator + "ipaynow"))
         delete(File(decompileDir + File.separator + "smali_classes2" + File.separator + "com" + File.separator + "ipaynow"))
+    }
+
+    /**
+     * 删除本机号码一键登录相关代码，部分联运渠道（如：大蓝）会接入一键登录，可能会与我方的代码冲突。
+     * 这里是直接删除整个文件夹，使用时应当留意母包对应目录中是否有研发相关代码，避免误删。
+     */
+    fun deleteAuthLoginMethod(decompileDir: String) {
+        delete(
+            File(
+                decompileDir
+                        + File.separator + "smali"
+                        + File.separator + "com"
+                        + File.separator + "mobile"
+            )
+        )
+        delete(
+            File(
+                decompileDir
+                        + File.separator + "smali"
+                        + File.separator + "com"
+                        + File.separator + "cmic"
+            )
+        )
     }
 
     /**
