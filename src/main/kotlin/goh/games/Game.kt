@@ -195,7 +195,7 @@ abstract class Game(private val apk: String) {
                 "smali",
                 "smali_classes2",
                 "res" -> File(patchFile, it.name).copyDirTo(File(decompileDir, it.name))
-                "so", "jni" -> FileUtil.copySoLib(     // FIXME: 有些渠道对该文件夹命名不一，后面要统一
+                "lib", "so", "jni" -> FileUtil.copySoLib(     // FIXME: 有些渠道对该文件夹命名不一，后面要统一
                     patchFile + File.separator + it.name,
                     decompileDir + File.separator + "lib"
                 )

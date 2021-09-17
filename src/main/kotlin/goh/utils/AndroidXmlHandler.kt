@@ -624,9 +624,10 @@ object AndroidXmlHandler {
             <uses-permission android:name="org.simalliance.openmobileapi.SMARTCARD" />
         """.trimIndent()
 
-        // 删除原主 Activity 的 LAUNCHER
+        // 删除原主 Activity 的 LAUNCHER 以及 android:requestLegacyExternalStorage
         file.writeText(
             file.readText()
+                .replace("android:requestLegacyExternalStorage=\"true\"", "")
                 .replace("<category android:name=\"android.intent.category.LAUNCHER\"/>", "")
         )
 
