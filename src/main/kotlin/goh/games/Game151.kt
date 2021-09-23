@@ -9,11 +9,18 @@ import java.io.File
  */
 class Game151(apk: String) : Game(apk) {
     override fun replaceResource(loginImage: String?, loadingImage: String?, logoImage: String?, splashImage: String?) {
-        val gameLoginImgPath = decompileDir + File.separator +
+        val gameSplashImgPath = decompileDir + File.separator +
                 "res" + File.separator +
                 "drawable-xxxhdpi" + File.separator +
                 "loading.jpg"
+        val gameLoginImgPath = decompileDir + File.separator +
+                "assets" + File.separator +
+                "h5" + File.separator +
+                "assets" + File.separator +
+                "game_bg" + File.separator +
+                "8.jpg"
         FileUtil.replaceResource(loginImage, gameLoginImgPath)
+        FileUtil.replaceResource(splashImage, gameSplashImgPath)
     }
 
     override fun generateSignedApk(
