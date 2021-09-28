@@ -18,7 +18,7 @@ abstract class Game(private val apk: String) {
     protected lateinit var decompileDir: String
     private lateinit var apktool: String
     private lateinit var gameName: String
-    private lateinit var pkgName: String
+    private lateinit var packageName: String
     private lateinit var pkId: String
     private var loginType = "0"
 
@@ -125,7 +125,7 @@ abstract class Game(private val apk: String) {
      * 修改包名，需要提供包名给研发，否则可能会出错
      */
     fun setPackageName(packageName: String) {
-        pkgName = packageName
+        this.packageName = packageName
         val file = File(decompileDir + File.separator + "AndroidManifest.xml")
         var manifest = file.readText()
         val packageMatcher = Pattern.compile("package=\"(.*?)\"").matcher(manifest)
@@ -258,7 +258,8 @@ abstract class Game(private val apk: String) {
 
     /**
      * 渠道配置
-     * @param channelTag 渠道标记。0：无渠道 SDK，1：头条，2：UC，3：快手，4：爱奇艺，5：星图，6：百度，7：广点通，8：小米，9：OPPO，10：ViVO，11：应用宝，12：大蓝
+     * @param channelTag 渠道标记
+     * @see ChannelTag
      */
     fun channelConfig(channelTag: String, channelAppId: String, channelAppName: String, appInfo: String = "0") {
         val map = HashMap<String, String>()
@@ -268,9 +269,8 @@ abstract class Game(private val apk: String) {
                 map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
                 AndroidXmlHandler.setBytedanceManifest(decompileDir)
             }
-            else -> {
-                map["appId"] = channelAppId
-            }
+            ChannelTag.BAIDU.tag -> AndroidXmlHandler.setBaiduOCPCManifest(decompileDir, packageName)
+            else -> map["appId"] = channelAppId
         }
 
 //        map["isReport"] = if ("0" == channelTag) "0" else "1"
@@ -334,7 +334,7 @@ abstract class Game(private val apk: String) {
     ): Boolean {
         val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"))
         val fileName = "${gameName}_${
-            pkgName.substring(pkgName.lastIndexOf(".") + 1)     // 截取包名最后一段拼接，由于现参数混用，这种方法已无法标记到包，只能靠 pkid，后面可以考虑将 pkName 转拼音拼接
+            packageName.substring(packageName.lastIndexOf(".") + 1)     // 截取包名最后一段拼接，由于现参数混用，这种方法已无法标记到包，只能靠 pkid，后面可以考虑将 pkName 转拼音拼接
         }_${gid}_${pkId}_${appVersion}_rongyao_${time}_${channelAbbr}${loginType}.apk"
         val filePath = generatePath + File.separator + fileName
         println("文件路径：$filePath")

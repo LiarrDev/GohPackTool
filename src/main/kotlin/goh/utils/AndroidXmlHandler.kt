@@ -164,6 +164,53 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 百度 OCPC 的 AndroidManifest 设置
+     */
+    fun setBaiduOCPCManifest(decompileDir: String, packageName: String) {
+        val content = """
+                <activity
+                    android:name="com.baidu.xenv.XenvActivity"
+                    android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
+                    android:excludeFromRecents="true"
+                    android:exported="false"
+                    android:launchMode="standard"
+                    android:theme="@android:style/Theme.Translucent" >
+                    <intent-filter>
+                        <action android:name="com.baidu.action.Xenv.VIEW" />
+                        <category android:name="com.baidu.category.xenv" />
+                        <category android:name="android.intent.category.DEFAULT" />
+                    </intent-filter>
+                </activity>
+                <service
+                    android:name="com.baidu.xenv.XenvService"
+                    android:exported="false" >
+                    <intent-filter>
+                        <action android:name="com.baidu.action.Xenv.VIEW" />
+                        <category android:name="com.baidu.category.xenv" />
+                        <category android:name="android.intent.category.DEFAULT" />
+                    </intent-filter>
+                </service>
+                <provider
+                    android:name="com.baidu.xenv.XenvProvider"
+                    android:authorities="$packageName.xenv.ac.provider"
+                    android:exported="false"
+                    tools:replace="android:authorities" />
+                <meta-data
+                    android:name="seckey_avscan"
+                    android:value="660346260f8a841a04ec2a56815b421b" />
+                <meta-data
+                    android:name="appkey_avscan"
+                    android:value="100034" />
+            </application>
+            <permission
+                android:name="$packageName.permission.xenv.RECEIVE"
+                android:protectionLevel="signatureOrSystem" />
+            <uses-permission android:name="$packageName.permission.xenv.RECEIVE" />
+        """.trimIndent()
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+    }
+
+    /**
      * 应用宝 YSDK 的 AndroidManifest 设置
      */
     fun setYsdkManifest(decompileDir: String, packageName: String, qqAppId: String, wxAppId: String) {
