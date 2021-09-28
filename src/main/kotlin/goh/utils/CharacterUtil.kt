@@ -38,3 +38,23 @@ fun String.compareVersionWith(version: String): Int {
     }
     return 0
 }
+
+/**
+ * 判断版本号是否比指定版本号更新
+ *
+ * @param version 要比较的版本号
+ * @return 当版本号大于或等于 version 时为 true，否则为 false
+ */
+fun String.versionLaterThan(version: String): Boolean {
+    return this.compareVersionWith(version) >= 0
+}
+
+/**
+ * 判断版本号是否比指定版本号更老
+ *
+ * @param version 要比较的版本号
+ * @return 当版本号小于 version 时为 true，否则为 false
+ */
+fun String.versionOlderThan(version: String): Boolean {
+    return this.versionLaterThan(version).not()
+}
