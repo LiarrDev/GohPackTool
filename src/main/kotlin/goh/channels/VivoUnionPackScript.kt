@@ -1,9 +1,7 @@
 package goh.channels
 
 import goh.games.*
-import goh.utils.AndroidXmlHandler
-import goh.utils.FileUtil
-import goh.utils.PropertiesUtil
+import goh.utils.*
 import java.io.File
 import java.time.LocalDateTime
 
@@ -36,7 +34,7 @@ fun main(vararg args: String) {
     val packType = args[16]                 // 母包类型，和后台打包配置 ID 一致
     val channelAppId = args[17]             // ViVO AppId
     val channelFile = args[18]              // 渠道注入文件路径
-    val channelTag = "10"                   // 渠道标记，10：ViVO
+    val channelTag = ChannelTag.VIVO.tag    // 渠道标记，10：ViVO
     val channelAbbr = "ViVO"                // 渠道简称
 
     println(
@@ -64,13 +62,19 @@ fun main(vararg args: String) {
             
             packType = $packType
             channelAppId = $channelAppId
-            channelFile = $packType$channelFile
-            channelTag = $packType$channelTag
-            channelAbbr = $packType$channelAbbr
+            channelFile = $channelFile
+            channelTag = $channelTag
+            channelAbbr = $channelAbbr
             
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()
     )
+
+    // 3.2.1.3 更新了 OAID 1.0.25，渠道注入不兼容，所以不支持，原包不需要注入渠道，所以可以绕过
+    if (sdkVersion.compareVersionWith("3.2.1.3") < 0) {
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.3，不能自动出包")
+        return
+    }
 
     val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {

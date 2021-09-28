@@ -42,7 +42,7 @@ fun main(vararg args: String) {
 
     val packType = args[22]                 // 母包类型，和后台打包配置 ID 一致
     val channelFile = args[23]              // 渠道注入文件路径
-    val channelTag = "11"                   // 渠道标记，11：应用宝 YSDK，必须非 0，为了切支付登录后依然能通过广点通上报
+    val channelTag = ChannelTag.YSDK.tag    // 渠道标记，11：应用宝 YSDK，必须非 0，为了切支付登录后依然能通过广点通上报
     val channelAbbr = "YSDK"                // 渠道简称
 
     println(
@@ -70,15 +70,15 @@ fun main(vararg args: String) {
             
             gdtUserActionSetID = $gdtUserActionSetID
             gdtAppSecretKey = $gdtAppSecretKey
-            qqAppId = $gdtAppSecretKey$qqAppId
-            wxAppId = $gdtAppSecretKey$wxAppId
-            wxApiPath = $wxAppId$wxApiPath
+            qqAppId = $qqAppId
+            wxAppId = $wxAppId
+            wxApiPath = $wxApiPath
             isTest = $isTest
             
             packType = $packType
-            channelFile = $packType$channelFile
-            channelTag = $packType$channelTag
-            channelAbbr = $packType$channelAbbr
+            channelFile = $channelFile
+            channelTag = $channelTag
+            channelAbbr = $channelAbbr
             
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()

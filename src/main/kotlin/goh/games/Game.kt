@@ -1,5 +1,6 @@
 package goh.games
 
+import goh.channels.ChannelTag
 import goh.utils.*
 import org.dom4j.io.SAXReader
 import org.dom4j.io.XMLWriter
@@ -261,12 +262,15 @@ abstract class Game(private val apk: String) {
      */
     fun channelConfig(channelTag: String, channelAppId: String, channelAppName: String, appInfo: String = "0") {
         val map = HashMap<String, String>()
-        if ("1" == channelTag || "5" == channelTag) {                                    // 头条的 AppId 做加密处理
-            map["appId"] = EncryptUtil.encryptAppId(channelAppId)
-            map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
-            AndroidXmlHandler.setBytedanceManifest(decompileDir)
-        } else {
-            map["appId"] = channelAppId
+        when (channelTag) {
+            ChannelTag.TOUTIAO.tag, ChannelTag.XINGTU.tag -> {    // 头条的 AppId 做加密处理
+                map["appId"] = EncryptUtil.encryptAppId(channelAppId)
+                map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
+                AndroidXmlHandler.setBytedanceManifest(decompileDir)
+            }
+            else -> {
+                map["appId"] = channelAppId
+            }
         }
 
 //        map["isReport"] = if ("0" == channelTag) "0" else "1"

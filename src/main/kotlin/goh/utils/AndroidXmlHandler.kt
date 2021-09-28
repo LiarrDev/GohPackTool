@@ -143,21 +143,21 @@ object AndroidXmlHandler {
      */
     fun setBytedanceManifest(decompileDir: String) {
         val content = """
-            <activity android:name="com.bytedance.applog.util.SimulateLaunchActivity">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <data
-                        android:host="rangersapplog"
-                        android:path="/picker"
-                        android:scheme="rangersapplog.byax6uyt" />
-                </intent-filter>
-            </activity>
-            <receiver
-                android:name="com.bytedance.applog.collector.Collector"
-                android:enabled="true"
-                android:exported="false" />
+                <activity android:name="com.bytedance.applog.util.SimulateLaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.VIEW" />
+                        <category android:name="android.intent.category.BROWSABLE" />
+                        <category android:name="android.intent.category.DEFAULT" />
+                        <data
+                            android:host="rangersapplog"
+                            android:path="/picker"
+                            android:scheme="rangersapplog.byax6uyt" />
+                    </intent-filter>
+                </activity>
+                <receiver
+                    android:name="com.bytedance.applog.collector.Collector"
+                    android:enabled="true"
+                    android:exported="false" />
             </application>
         """.trimIndent()
         replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)

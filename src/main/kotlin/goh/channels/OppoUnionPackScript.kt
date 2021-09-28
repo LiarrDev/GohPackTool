@@ -1,8 +1,9 @@
 package goh.channels
 
-import goh.games.*
+import goh.games.GameFactory
 import goh.utils.AndroidXmlHandler
 import goh.utils.PropertiesUtil
+import goh.utils.compareVersionWith
 import java.io.File
 import java.time.LocalDateTime
 
@@ -36,7 +37,7 @@ fun main(vararg args: String) {
     val channelAppKey = args[17]            // OPPO AppKey
     val channelAppSecret = args[18]         // OPPO AppSecret
     val channelFile = args[19]              // 渠道注入文件路径
-    val channelTag = "9"                    // 渠道标记，9：OPPO
+    val channelTag = ChannelTag.OPPO.tag    // 渠道标记，9：OPPO
     val channelAbbr = "Oppo"                // 渠道简称
 
     println(
@@ -72,6 +73,12 @@ fun main(vararg args: String) {
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()
     )
+
+    // 3.2.1.3 更新了 OAID 1.0.25，渠道注入不兼容，所以不支持，原包不需要注入渠道，所以可以绕过
+    if (sdkVersion.compareVersionWith("3.2.1.3") < 0) {
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.3，不能自动出包")
+        return
+    }
 
     val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {

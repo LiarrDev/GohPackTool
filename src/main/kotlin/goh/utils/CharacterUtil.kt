@@ -39,3 +39,21 @@ fun compareVersion(benchmark: String, compareWith: String): Int {
     }
     return 0
 }
+
+/**
+ * @see compareVersion(String, String)
+ */
+fun String.compareVersionWith(version: String): Int {
+    val bVer = this.split(".")
+    val cVer = version.split(".")
+    for (index in 0 until max(bVer.size, cVer.size)) {
+        val i = if (index < bVer.size) (bVer[index]).toInt() else 0
+        val j = if (index < cVer.size) (cVer[index]).toInt() else 0
+        if (i < j) {
+            return -1
+        } else if (i > j) {
+            return 1
+        }
+    }
+    return 0
+}

@@ -3,6 +3,7 @@ package goh.channels
 import goh.games.GameFactory
 import goh.utils.AndroidXmlHandler
 import goh.utils.FileUtil
+import goh.utils.compareVersionWith
 import java.io.File
 import java.time.LocalDateTime
 
@@ -40,7 +41,7 @@ fun main(vararg args: String) {
     val channelChannelId = args[20]         // 大蓝 Channel ID
     val channelGameChannelId = args[21]     // 大蓝 Game Channel ID
     val channelFile = args[22]              // 渠道注入文件路径
-    val channelTag = "12"                   // 渠道标记，12：大蓝
+    val channelTag = ChannelTag.DALAN.tag   // 渠道标记，12：大蓝
     val channelAbbr = "Dalan"               // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
 
     println(
@@ -79,6 +80,12 @@ fun main(vararg args: String) {
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()
     )
+
+    // 3.2.1.3 更新了 OAID 1.0.25，渠道注入不兼容，所以不支持，原包不需要注入渠道，所以可以绕过
+    if (sdkVersion.compareVersionWith("3.2.1.3") < 0) {
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.3，不能自动出包")
+        return
+    }
 
     val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {
