@@ -112,6 +112,7 @@ fun main(vararg args: String) {
                 channelGameChannelId
             )
             FileUtil.deleteAuthLoginMethod(decompileDir)
+            FileUtil.deleteOriginPayMethod(decompileDir)
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
