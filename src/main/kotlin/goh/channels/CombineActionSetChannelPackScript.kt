@@ -122,8 +122,7 @@ fun main(vararg args: String) {
         )
         channelConfig(channelTag, "", "")
         extra {
-            // FIXME: 后面可以整合到 ZSmultil 文件内
-            PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "BaiduConf.ini"))
+            PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
                 .setProperties(
                     mapOf(
                         "userActionSetID" to channelUserActionSetID,
