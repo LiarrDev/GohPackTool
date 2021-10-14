@@ -270,6 +270,7 @@ abstract class Game(private val apk: String) {
                 AndroidXmlHandler.setBytedanceManifest(decompileDir)
             }
             ChannelTag.BAIDU.tag -> AndroidXmlHandler.setBaiduOCPCManifest(decompileDir, packageName)
+            ChannelTag.GDT.tag -> AndroidXmlHandler.setGdtManifest(decompileDir, packageName)
             else -> map["appId"] = channelAppId
         }
 

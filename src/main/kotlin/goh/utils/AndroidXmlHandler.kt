@@ -211,6 +211,21 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 广点通的 AndroidManifest 设置
+     */
+    fun setGdtManifest(decompileDir: String, packageName: String) {
+        val content = """
+                <provider
+                    android:name="com.qq.gdt.action.GDTInitProvider"
+                    android:authorities="$packageName.GDTInitProvider"
+                    android:exported="false">
+                </provider>
+            </application>
+        """.trimIndent()
+        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+    }
+
+    /**
      * 应用宝 YSDK 的 AndroidManifest 设置
      */
     fun setYsdkManifest(decompileDir: String, packageName: String, qqAppId: String, wxAppId: String) {
