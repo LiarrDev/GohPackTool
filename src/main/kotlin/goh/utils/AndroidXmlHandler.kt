@@ -450,16 +450,33 @@ object AndroidXmlHandler {
                     android:process=":gcsdk"
                     android:theme="@style/Theme_Dialog_Custom" />
                 <provider
+                    android:name="com.heytap.msp.sdk.MspFileProvider"
+                    android:authorities="$packageName.MspFileProvider"
+                    android:exported="false"
+                    android:grantUriPermissions="true"
+                    android:process=":gcsdk">
+                    <meta-data
+                        android:name="android.support.FILE_PROVIDER_PATHS"
+                        android:resource="@xml/provider_paths" />
+                </provider>
+                <provider
                     android:name="com.nearme.platform.opensdk.pay.NearMeFileProvider"
                     android:authorities="$packageName.fileProvider"
                     android:exported="false"
-                    android:grantUriPermissions="true" >
+                    android:grantUriPermissions="true"
+                    android:process=":gcsdk">
                     <meta-data
                         android:name="android.support.FILE_PROVIDER_PATHS"
-                        android:resource="@xml/oppo_file_paths" />
+                        android:resource="@xml/file_paths" />
                 </provider>
                 <activity
                     android:name="com.nearme.game.sdk.component.proxy.ProxyActivity"
+                    android:configChanges="keyboardHidden|orientation|screenSize"
+                    android:exported="false"
+                    android:process=":gcsdk"
+                    android:theme="@style/Theme_Dialog_Custom" />
+                <activity
+                    android:name="com.oppo.usercenter.opensdk.dialog.register.UserCenterOperateActivity"
                     android:configChanges="keyboardHidden|orientation|screenSize"
                     android:exported="false"
                     android:process=":gcsdk"
@@ -500,6 +517,8 @@ object AndroidXmlHandler {
                     android:name="app_secret"
                     android:value="$appSecret" />
             </application>
+            <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+            <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
             <uses-permission android:name="android.permission.USE_CREDENTIALS" />
             <uses-permission android:name="android.permission.GET_ACCOUNTS" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
