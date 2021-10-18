@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 /**
  * 行为数据源通用打包脚本
  * 可用渠道包括：广点通、百度
- * TODO：该脚本未完成
  */
 fun main(vararg args: String) {
     println("通用行为数据源打包任务开始...")

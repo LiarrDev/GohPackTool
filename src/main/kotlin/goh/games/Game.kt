@@ -269,7 +269,10 @@ abstract class Game(private val apk: String) {
                 map["tt_appId"] = EncryptUtil.getFakeAppId()            // 这个字段已废弃，生成一个假的 AppId 用来迷惑
                 AndroidXmlHandler.setBytedanceManifest(decompileDir)
             }
-            ChannelTag.BAIDU.tag -> AndroidXmlHandler.setBaiduOCPCManifest(decompileDir, packageName)
+            ChannelTag.BAIDU.tag -> {
+                AndroidXmlHandler.setBaiduOCPCManifest(decompileDir, packageName)
+                AndroidXmlHandler.setManifestNameSpace(File(decompileDir, "AndroidManifest.xml"))
+            }
             ChannelTag.GDT.tag -> AndroidXmlHandler.setGdtManifest(decompileDir, packageName)
             else -> map["appId"] = channelAppId
         }

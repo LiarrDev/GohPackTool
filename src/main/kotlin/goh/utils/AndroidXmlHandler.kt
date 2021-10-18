@@ -91,6 +91,17 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 为 AndroidManifest 文件增加命名空间
+     */
+    fun setManifestNameSpace(androidManifest: File) {
+        var manifest = androidManifest.readText()
+        if (!manifest.contains("xmlns:tools=\"http://schemas.android.com/tools\"")) {
+            manifest = manifest.replace("<manifest", "<manifest xmlns:tools=\"http://schemas.android.com/tools\"")
+        }
+        androidManifest.writeText(manifest)
+    }
+
+    /**
      * 三方登录需要设置的 AndroidManifest
      */
     fun setThirdPartyLoginManifest(
