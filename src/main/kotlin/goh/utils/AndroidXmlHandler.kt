@@ -95,8 +95,9 @@ object AndroidXmlHandler {
      */
     fun setManifestNameSpace(androidManifest: File) {
         var manifest = androidManifest.readText()
-        if (!manifest.contains("xmlns:tools=\"http://schemas.android.com/tools\"")) {
-            manifest = manifest.replace("<manifest", "<manifest xmlns:tools=\"http://schemas.android.com/tools\"")
+        val toolsNameSpace = "xmlns:tools=\"http://schemas.android.com/tools\"";
+        if (!manifest.contains(toolsNameSpace)) {
+            manifest = manifest.replace("<manifest", "<manifest $toolsNameSpace")
         }
         androidManifest.writeText(manifest)
     }

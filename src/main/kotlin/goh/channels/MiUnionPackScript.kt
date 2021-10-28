@@ -97,7 +97,7 @@ fun main(vararg args: String) {
         setPackType(packType)
         extra {
             AndroidXmlHandler.setMiManifest(decompileDir, packageName)
-            PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "mi_config.ini"))
+            PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
                 .setProperties(
                     mapOf(
                         "mi_app_id" to channelAppId,
