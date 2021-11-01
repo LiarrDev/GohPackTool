@@ -435,13 +435,14 @@ object AndroidXmlHandler {
      * ViVO 联运的 AndroidManifest 设置
      */
     fun setVivoManifest(decompileDir: String, appId: String) {
+        // SDK 内已内置了 REQUEST_INSTALL_PACKAGES 权限，但是有些 CP 没有处理，以防万一这里加上
         val content = """
                 <meta-data
                     android:name="vivo_app_id"
                     android:value="$appId" />
                 <meta-data
                     android:name="vivo_union_sdk"
-                    android:value="4.6.0.4" />
+                    android:value="4.6.9.0" />
                 <activity
                     android:name="com.vivo.unionsdk.ui.UnionActivity"
                     android:configChanges="orientation|keyboardHidden|navigation|screenSize"
@@ -459,7 +460,6 @@ object AndroidXmlHandler {
                 </activity>
             </application>
             <uses-permission android:name="vivo.game.permission.OPEN_JUMP_INTENTS" />
-            <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
         """.trimIndent()
         replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
