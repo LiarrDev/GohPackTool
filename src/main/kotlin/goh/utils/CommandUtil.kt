@@ -6,6 +6,7 @@ import java.io.InputStreamReader
 
 object CommandUtil {
     fun exec(command: String): Boolean {
+        println("【Command】 $command")
         val process: Process = Runtime.getRuntime().exec(command)
         val errorStream = StreamGobbler(process.errorStream, "ERROR")
         val outputStream = StreamGobbler(process.inputStream, "OUTPUT")
