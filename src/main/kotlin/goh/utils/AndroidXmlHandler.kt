@@ -426,6 +426,7 @@ object AndroidXmlHandler {
             <uses-permission android:name="android.permission.WAKE_LOCK" />
             <uses-permission android:name="com.xiaomi.sdk.permission.PAYMENT" />
             <uses-permission android:name="com.xiaomi.permission.AUTH_SERVICE" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
         """.trimIndent()
         replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
