@@ -103,6 +103,49 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 移除 SDK 的闪屏页
+     * @since 3.2.1.6
+     */
+    private fun removeSplashActivity(androidManifest: File) {
+        println("移除 Splash Activity")
+        val actionMain = "<action android:name=\"android.intent.action.MAIN\"/>"
+        val categoryLauncher = "<category android:name=\"android.intent.category.LAUNCHER\"/>"
+        var manifest = androidManifest.readText()
+        manifest = manifest.replace(actionMain, "").replace(categoryLauncher, "")
+        androidManifest.writeText(manifest)
+        val document = SAXReader().read(androidManifest)
+        val activityList = document.rootElement
+            .element("application")
+            .elements("activity")
+        var gameActivity = ""
+        activityList.forEach {
+            if (it.attributeValue("name") == "com.mayisdk.means.SplashActivity") {
+                gameActivity = it.element("meta-data").attributeValue("value")
+                println("游戏 Activity：$gameActivity")
+            }
+        }
+        if (gameActivity.isNotBlank()) {
+            activityList.forEach {
+                if (it.attributeValue("name") == gameActivity) {
+                    val intentFilter = it.element("intent-filter")
+                    if (intentFilter == null) {
+                        it.addElement("intent-filter")
+                    }
+                    it.element("intent-filter")
+                        .addElement("action")
+                        .addAttribute("android:name", "android.intent.action.MAIN")
+                    it.element("intent-filter")
+                        .addElement("category")
+                        .addAttribute("android:name", "android.intent.category.LAUNCHER")
+                }
+            }
+        }
+        val writer = XMLWriter(FileWriter(androidManifest))
+        writer.write(document)
+        writer.close()
+    }
+
+    /**
      * 三方登录需要设置的 AndroidManifest
      */
     fun setThirdPartyLoginManifest(
@@ -429,7 +472,9 @@ object AndroidXmlHandler {
             <uses-permission android:name="android.permission.GET_ACCOUNTS" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
         """.trimIndent()
-        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+        val file = File(decompileDir, "AndroidManifest.xml")
+        replaceXmlEndTag(file, "</application>", content)
+        removeSplashActivity(file)
     }
 
     /**
