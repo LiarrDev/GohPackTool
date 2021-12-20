@@ -5,9 +5,9 @@ import java.io.File
 
 /**
  * GID: 147
- * 九州八荒录
+ * 九州横板测试
  */
-class Game147(apk: String) : Game(apk) {
+class Game153(apk: String) : Game(apk) {
     override fun replaceResource(loginImage: String?, loadingImage: String?, logoImage: String?, splashImage: String?) {
         val gameLoginImgPath = decompileDir + File.separator +
                 "assets" + File.separator +
@@ -38,6 +38,6 @@ class Game147(apk: String) : Game(apk) {
         appVersion: String,
         channelAbbr: String
     ): Boolean {
-        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "jzbhl")
+        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "jzhbcs")
     }
 }

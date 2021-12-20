@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 
 /**
  * 百度 SDK 渠道打包脚本
- * TODO: 可与广点通联盟脚本合并
  */
+@Deprecated("已与广点通脚本合并，详见 CombineActionSetChannelPackScript.kt")
 fun main(vararg args: String) {
     println("百度 SDK 渠道打包任务开始...")
     println("打包时间：${LocalDateTime.now()}")

@@ -190,7 +190,7 @@ abstract class Game(private val apk: String) {
             println("$patchFile File path is empty")
             return
         }
-        File(patchFile).getDirectoryList().forEach {
+        File(patchFile).getDirectoryList().forEach {    // FIXME: 因为接入了大蓝的 VIP SDK，所以用到的模块最好都放到第一个 smali 避免冲突
             when (it.name) {
                 "assets",
                 "smali",
@@ -305,6 +305,14 @@ abstract class Game(private val apk: String) {
             e.printStackTrace()
             false
         }
+    }
+
+    /**
+     * 劲飞 VIP SDK 配置
+     */
+    fun vipSdkConfig(gid: String) {
+        val file = File(decompileDir, "AndroidManifest.xml")
+        AndroidXmlHandler.setVipAppId(file, gid)
     }
 
     /**

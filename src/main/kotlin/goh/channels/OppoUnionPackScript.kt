@@ -74,9 +74,9 @@ fun main(vararg args: String) {
     """.trimIndent()
     )
 
-    // 3.2.1.3 更新了 OAID 1.0.25，渠道注入不兼容，所以不支持，原包不需要注入渠道，所以可以绕过
-    if (sdkVersion.versionOlderThan("3.2.1.3")) {
-        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.3，不能自动出包")
+    // 3.2.1.8 接入大蓝 VIP SDK
+    if (sdkVersion.versionOlderThan("3.2.1.8")) {
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.8，不能自动出包")
         return
     }
 
@@ -95,6 +95,7 @@ fun main(vararg args: String) {
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
+        vipSdkConfig(gid)
         extra {
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
                 .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报

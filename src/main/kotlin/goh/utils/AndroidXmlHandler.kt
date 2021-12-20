@@ -95,7 +95,7 @@ object AndroidXmlHandler {
      */
     fun setManifestNameSpace(androidManifest: File) {
         var manifest = androidManifest.readText()
-        val toolsNameSpace = "xmlns:tools=\"http://schemas.android.com/tools\"";
+        val toolsNameSpace = "xmlns:tools=\"http://schemas.android.com/tools\""
         if (!manifest.contains(toolsNameSpace)) {
             manifest = manifest.replace("<manifest", "<manifest $toolsNameSpace")
         }
@@ -104,28 +104,27 @@ object AndroidXmlHandler {
 
     /**
      * 移除 SDK 的闪屏页
-     * @since 3.2.1.6
+     * @since V3.2.1.8
      */
-    private fun removeSplashActivity(androidManifest: File) {
+    private fun removeSdkSplashActivity(androidManifest: File) {
         println("移除 Splash Activity")
         val actionMain = "<action android:name=\"android.intent.action.MAIN\"/>"
         val categoryLauncher = "<category android:name=\"android.intent.category.LAUNCHER\"/>"
         var manifest = androidManifest.readText()
         manifest = manifest.replace(actionMain, "").replace(categoryLauncher, "")
         androidManifest.writeText(manifest)
+
         val document = SAXReader().read(androidManifest)
-        val activityList = document.rootElement
-            .element("application")
-            .elements("activity")
+        val applicationElement = document.rootElement.element("application")
         var gameActivity = ""
-        activityList.forEach {
-            if (it.attributeValue("name") == "com.mayisdk.means.SplashActivity") {
-                gameActivity = it.element("meta-data").attributeValue("value")
+        applicationElement.elements("meta-data").forEach {
+            if (it.attributeValue("name") == "ry.game.activity") {
+                gameActivity = it.attributeValue("value")
                 println("游戏 Activity：$gameActivity")
             }
         }
         if (gameActivity.isNotBlank()) {
-            activityList.forEach {
+            applicationElement.elements("activity").forEach {
                 if (it.attributeValue("name") == gameActivity) {
                     val intentFilter = it.element("intent-filter")
                     if (intentFilter == null) {
@@ -143,6 +142,26 @@ object AndroidXmlHandler {
         val writer = XMLWriter(FileWriter(androidManifest))
         writer.write(document)
         writer.close()
+    }
+
+    /**
+     * 设置大蓝 VIP SDK 的 App ID
+     * @since V3.2.1.8
+     */
+    fun setVipAppId(androidManifest: File, gameId: String) {
+        println("设置 VIP AppId")
+        SAXReader().read(androidManifest).apply {
+            rootElement.element("application")
+                .elements("meta-data")
+                .forEach {
+                    if (it.attributeValue("name") == "DL_APPID") {
+                        it.attribute("value").value = gameId
+                    }
+                }
+            val writer = XMLWriter(FileWriter(androidManifest))
+            writer.write(this)
+            writer.close()
+        }
     }
 
     /**
@@ -474,7 +493,7 @@ object AndroidXmlHandler {
         """.trimIndent()
         val file = File(decompileDir, "AndroidManifest.xml")
         replaceXmlEndTag(file, "</application>", content)
-        removeSplashActivity(file)
+        removeSdkSplashActivity(file)
     }
 
     /**
@@ -508,7 +527,9 @@ object AndroidXmlHandler {
             <uses-permission android:name="vivo.game.permission.OPEN_JUMP_INTENTS" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
         """.trimIndent()
-        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+        val file = File(decompileDir, "AndroidManifest.xml")
+        replaceXmlEndTag(file, "</application>", content)
+        removeSdkSplashActivity(file)
     }
 
     /**
@@ -596,7 +617,9 @@ object AndroidXmlHandler {
             <uses-permission android:name="android.permission.GET_ACCOUNTS" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
         """.trimIndent()
-        replaceXmlEndTag(File(decompileDir, "AndroidManifest.xml"), "</application>", content)
+        val file = File(decompileDir, "AndroidManifest.xml")
+        replaceXmlEndTag(file, "</application>", content)
+        removeSdkSplashActivity(file)
     }
 
     /**
@@ -635,6 +658,7 @@ object AndroidXmlHandler {
         channelGameChannelId: String
     ) {
         val file = File(decompileDir, "AndroidManifest.xml")
+        removeSdkSplashActivity(file)
         val content = """
                 <activity
                     android:name="com.dalan.dl_assembly.SplashScreenActivity"

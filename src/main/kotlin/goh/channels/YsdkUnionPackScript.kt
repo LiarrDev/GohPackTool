@@ -116,7 +116,7 @@ fun main(vararg args: String) {
                         }
                     )
                 )
-            AndroidXmlHandler.setYsdkManifest(decompileDir, packageName, qqAppId, wxAppId)
+            AndroidXmlHandler.setYsdkManifest(decompileDir, packageName, qqAppId, wxAppId)      // FIXME: SDK V3.2.1.7
         }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()

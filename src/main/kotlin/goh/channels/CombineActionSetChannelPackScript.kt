@@ -90,9 +90,9 @@ fun main(vararg args: String) {
     """.trimIndent()
     )
 
-    // 3.2.1.3 更新了 OAID 1.0.25，渠道注入不兼容，所以不支持，原包不需要注入渠道，所以可以绕过
-    if (sdkVersion.versionOlderThan("3.2.1.3")) {
-        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.3，不能自动出包")
+    // 3.2.1.8 接入大蓝 VIP SDK
+    if (sdkVersion.versionOlderThan("3.2.1.8")) {
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.8，不能自动出包")
         return
     }
 
@@ -130,6 +130,7 @@ fun main(vararg args: String) {
                 )
         }
         setPackType(packType)
+        vipSdkConfig(gid)
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
         }
