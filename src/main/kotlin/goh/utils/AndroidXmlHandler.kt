@@ -304,6 +304,7 @@ object AndroidXmlHandler {
      */
     fun setYsdkManifest(decompileDir: String, packageName: String, qqAppId: String, wxAppId: String) {
         val file = File(decompileDir, "AndroidManifest.xml")
+        removeSdkSplashActivity(file)
         val content = """
                 <activity
                     android:name="com.tencent.midas.proxyactivity.APMidasPayProxyActivity"
