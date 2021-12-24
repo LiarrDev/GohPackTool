@@ -538,6 +538,14 @@ object AndroidXmlHandler {
      */
     fun setOppoManifest(decompileDir: String, packageName: String, appKey: String, appSecret: String) {
         val content = """
+                <service
+                    android:name="com.nearme.game.sdk.common.serice.OutPutFileService"
+                    android:enabled="true"
+                    android:exported="true" >
+                    <intent-filter>
+                        <action android:name="gusdk.children.discern.data" />
+                    </intent-filter>
+                </service>
                 <activity
                     android:name="com.nearme.game.sdk.component.proxy.JumpToProxyActivity"
                     android:configChanges="keyboardHidden|orientation|screenSize"
