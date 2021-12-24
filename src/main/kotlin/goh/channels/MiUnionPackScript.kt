@@ -2,6 +2,7 @@ package goh.channels
 
 import goh.games.GameFactory
 import goh.utils.AndroidXmlHandler
+import goh.utils.FileUtil
 import goh.utils.PropertiesUtil
 import goh.utils.versionOlderThan
 import java.io.File
@@ -92,6 +93,9 @@ fun main(vararg args: String) {
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId, "8")
+        extra {
+            FileUtil.deleteVipSdkMethod(decompileDir)
+        }
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)

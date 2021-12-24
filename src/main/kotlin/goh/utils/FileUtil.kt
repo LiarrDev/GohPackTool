@@ -105,6 +105,7 @@ object FileUtil {
      * @param dir 目录
      * @param filter 只要文件名包含此字符串就可删除
      */
+    @Deprecated("改用扩展方法", ReplaceWith("dir.deleteFileInDir(filter)"))
     private fun deleteFileInDir(dir: File, filter: String) {
         if (dir.exists() && dir.isDirectory) {
             val list = dir.listFiles()
@@ -182,6 +183,21 @@ object FileUtil {
                         + File.separator + "cmic"
             )
         )
+    }
+
+    /**
+     * 删除大蓝劲飞 VIP SDK 的封装类
+     */
+    fun deleteVipSdkMethod(decompileDir: String) {
+        File(
+            decompileDir
+                    + File.separator + "smali"
+                    + File.separator + "com"
+                    + File.separator + "mayisdk"
+                    + File.separator + "msdk"
+                    + File.separator + "api"
+                    + File.separator + "vip"
+        ).deleteFileInDir("DlVipHelper")
     }
 
     /**
@@ -276,4 +292,21 @@ fun File.getDirectoryList(): List<File> {
         }
     }
     return folders
+}
+
+/**
+ * 从目录中删除文件名符合规则的文件
+ * @param filter 只要文件名包含此字符串就可删除
+ */
+fun File.deleteFileInDir(filter: String) {
+    if (exists() && isDirectory) {
+        val list = listFiles()
+        if (!list.isNullOrEmpty()) {
+            list.forEach {
+                if (it.name.indexOf(filter) != -1) {
+                    FileUtil.delete(it)
+                }
+            }
+        }
+    }
 }
