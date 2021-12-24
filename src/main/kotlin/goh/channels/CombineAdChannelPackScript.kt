@@ -119,7 +119,7 @@ fun main(vararg args: String) {
         )
         channelConfig(channelTag, channelAppId, channelAppName)
         setPackType(packType)
-        vipSdkConfig(gid)
+        vipSdkConfig()
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
         }

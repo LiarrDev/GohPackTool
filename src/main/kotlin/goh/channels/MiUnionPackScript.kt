@@ -95,7 +95,7 @@ fun main(vararg args: String) {
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
-        vipSdkConfig(gid)
+        vipSdkConfig()
         extra {
             AndroidXmlHandler.setMiManifest(decompileDir, packageName)
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))

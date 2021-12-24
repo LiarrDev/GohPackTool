@@ -310,9 +310,9 @@ abstract class Game(private val apk: String) {
     /**
      * 劲飞 VIP SDK 配置
      */
-    fun vipSdkConfig(gid: String) {
+    fun vipSdkConfig() {
         val file = File(decompileDir, "AndroidManifest.xml")
-        AndroidXmlHandler.setVipAppId(file, gid)
+        AndroidXmlHandler.setVipAppId(file, pkId)
     }
 
     /**

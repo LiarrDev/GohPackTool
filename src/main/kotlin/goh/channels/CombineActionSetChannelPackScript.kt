@@ -130,7 +130,7 @@ fun main(vararg args: String) {
                 )
         }
         setPackType(packType)
-        vipSdkConfig(gid)
+        vipSdkConfig()
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
         }

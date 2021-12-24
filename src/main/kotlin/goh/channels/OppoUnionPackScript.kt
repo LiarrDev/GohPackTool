@@ -95,7 +95,7 @@ fun main(vararg args: String) {
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
-        vipSdkConfig(gid)
+        vipSdkConfig()
         extra {
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
                 .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报

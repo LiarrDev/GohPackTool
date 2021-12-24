@@ -148,14 +148,14 @@ object AndroidXmlHandler {
      * 设置大蓝 VIP SDK 的 App ID
      * @since V3.2.1.8
      */
-    fun setVipAppId(androidManifest: File, gameId: String) {
+    fun setVipAppId(androidManifest: File, pkId: String) {
         println("设置 VIP AppId")
         SAXReader().read(androidManifest).apply {
             rootElement.element("application")
                 .elements("meta-data")
                 .forEach {
                     if (it.attributeValue("name") == "DL_APPID") {
-                        it.attribute("value").value = gameId
+                        it.attribute("value").value = pkId
                     }
                 }
             val writer = XMLWriter(FileWriter(androidManifest))

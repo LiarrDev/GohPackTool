@@ -91,7 +91,7 @@ fun main(vararg args: String) {
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
-        vipSdkConfig(gid)
+        vipSdkConfig()
         extra {
             AndroidXmlHandler.setVivoManifest(decompileDir, channelAppId)
             FileUtil.deleteOriginPayMethod(decompileDir)
