@@ -46,6 +46,29 @@ object FileUtil {
     }
 
     /**
+     * 将插件注入 APK 包内
+     */
+    fun patchPlugin(decompileDir: String, patchFile: String) {
+        if (decompileDir.isBlank() or patchFile.isBlank()) {
+            println("【Patching Plugin】File path is empty")
+            return
+        }
+        File(patchFile).getDirectoryList().forEach {
+            when (it.name) {
+                "assets",
+                "smali",
+                "smali_classes2",
+                "unknown",
+                "res" -> File(patchFile, it.name).copyDirTo(File(decompileDir, it.name))
+                "lib", "so", "jni" -> copySoLib(
+                    patchFile + File.separator + it.name,
+                    decompileDir + File.separator + "lib"
+                )
+            }
+        }
+    }
+
+    /**
      * 复制 wxapi 相关文件
      */
     fun copyWeChatLoginFile(decompileDir: String, wxApiFile: File, packageName: String) {

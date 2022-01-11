@@ -1,18 +1,16 @@
 package goh.channels
 
 import goh.games.GameFactory
-import goh.utils.AndroidXmlHandler
-import goh.utils.FileUtil
 import goh.utils.versionOlderThan
 import java.io.File
 import java.time.LocalDateTime
 
 /**
- * 大蓝联运打包脚本
- * NOTE: 大蓝 SDK 目前最高支持 API 28，我方最高支持 API 29，视母包情况可能需要降级
+ * 华为联运打包脚本
+ * NOTE: 脚本未处理 R 文件，可能会有问题
  */
 fun main(vararg args: String) {
-    println("大蓝 联运打包任务开始...")
+    println("华为 联运打包任务开始...")
     println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
@@ -35,24 +33,20 @@ fun main(vararg args: String) {
     val splashImg = args[15]                // 闪屏路径
 
     val packType = args[16]                 // 母包类型，和后台打包配置 ID 一致
-    val channelAppId = args[17]             // 大蓝 AppId
-    val channelAppKey = args[18]            // 大蓝 AppKey
-    val channelGameId = args[19]            // 大蓝 Game ID
-    val channelChannelId = args[20]         // 大蓝 Channel ID
-    val channelGameChannelId = args[21]     // 大蓝 Game Channel ID
-    val channelFile = args[22]              // 渠道注入文件路径
-    val channelTag = ChannelTag.DALAN.tag   // 渠道标记，12：大蓝
-    val channelAbbr = "Dalan"               // 渠道简称，其实可以根据母包类型判断，但是如果配置 ID 修改就要更新脚本，所以单独传
+    val channelAppId = args[17]             // 华为 AppId，从 agconnect-services.json 文件获取
+    val channelFile = args[18]              // 渠道注入文件路径
+    val channelTag = ChannelTag.HUAWEI.tag  // 渠道标记，13：华为
+    val channelAbbr = "Huawei"
 
     println(
         """
             ═════════════════════════════════════════════════════════════════╗
-            
+
             apk = $apk
             generatePath = $generatePath
             apktool = $apktool
             keyStorePath = $keyStorePath
-            
+
             gid = $gid
             pkId = $pkId
             pkName = $pkName
@@ -60,33 +54,28 @@ fun main(vararg args: String) {
             appName = $appName
             appVersion = $appVersion
             sdkVersion = $sdkVersion
-            
+
             icon = $icon
             loginImg = $loginImg
             logoImg = $logoImg
             loadingImg = $loadingImg
             splashImg = $splashImg
-            
+
             packType = $packType
             channelAppId = $channelAppId
-            channelAppKey = $channelAppKey
-            channelGameId = $channelGameId
-            channelChannelId = $channelChannelId
-            channelGameChannelId = $channelGameChannelId
             channelFile = $channelFile
             channelTag = $channelTag
             channelAbbr = $channelAbbr
-            
+
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()
     )
 
-    // 3.2.2.0 接入大蓝 VIP SDK
+    // 3.2.2.0 移除大蓝 VIP SDK
     if (sdkVersion.versionOlderThan("3.2.2.0")) {
         println("当前 SDK 版本：V$sdkVersion，低于 V3.2.2.0，不能自动出包")
         return
     }
-
     val decompileDir = generatePath + File.separator + "temp"
     GameFactory(apk).getGame(gid)?.apply {
         decompile(decompileDir, apktool)
@@ -98,22 +87,10 @@ fun main(vararg args: String) {
             }
         )
         setPackageName(packageName)
-        gameConfig(sdkVersion, pkId, "174")
+        gameConfig(sdkVersion, pkId, "7")
         patchChannelFile(channelFile)
-        channelConfig(channelTag, "", "")
+        channelConfig(channelTag, channelAppId, "")
         setPackType(packType)
-        extra {
-            AndroidXmlHandler.setDalanManifest(
-                decompileDir,
-                channelAppId,
-                channelAppKey,
-                channelGameId,
-                channelChannelId,
-                channelGameChannelId
-            )
-            FileUtil.deleteAuthLoginMethod(decompileDir)
-            FileUtil.deleteOriginPayMethod(decompileDir)
-        }
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
         }

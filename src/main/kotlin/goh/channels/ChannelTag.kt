@@ -13,5 +13,6 @@ enum class ChannelTag(val tag: String) {
     OPPO("9"),          // OPPO 联运
     VIVO("10"),         // ViVO 联运
     YSDK("11"),         // 应用宝
-    DALAN("12")         // 大蓝
+    DALAN("12"),        // 大蓝
+    HUAWEI("13")        // 华为
 }

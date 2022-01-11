@@ -75,9 +75,9 @@ fun main(vararg args: String) {
     """.trimIndent()
     )
 
-    // 3.2.1.8 接入大蓝 VIP SDK
-    if (sdkVersion.versionOlderThan("3.2.1.8")) {
-        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.8，不能自动出包")
+    // 3.2.2.0 移除大蓝 VIP SDK
+    if (sdkVersion.versionOlderThan("3.2.2.0")) {
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.2.0，不能自动出包")
         return
     }
 
@@ -93,13 +93,9 @@ fun main(vararg args: String) {
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId, "8")
-        extra {
-            FileUtil.deleteVipSdkMethod(decompileDir)
-        }
         patchChannelFile(channelFile)
         channelConfig(channelTag, "", "")
         setPackType(packType)
-        vipSdkConfig()
         extra {
             AndroidXmlHandler.setMiManifest(decompileDir, packageName)
             PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))

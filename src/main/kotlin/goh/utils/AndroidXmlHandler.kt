@@ -150,18 +150,93 @@ object AndroidXmlHandler {
      */
     fun setVipAppId(androidManifest: File, pkId: String) {
         println("设置 VIP AppId")
-        SAXReader().read(androidManifest).apply {
-            rootElement.element("application")
-                .elements("meta-data")
-                .forEach {
-                    if (it.attributeValue("name") == "DL_APPID") {
-                        it.attribute("value").value = pkId
+        var manifest = androidManifest.readText()
+        if (manifest.contains("DL_APPID")) {    // 避免 CP 没有移除
+            SAXReader().read(androidManifest).apply {
+                rootElement.element("application")
+                    .elements("meta-data")
+                    .forEach {
+                        if (it.attributeValue("name") == "DL_APPID") {
+                            it.attribute("value").value = pkId
+                        }
                     }
-                }
-            val writer = XMLWriter(FileWriter(androidManifest))
-            writer.write(this)
-            writer.close()
+                val writer = XMLWriter(FileWriter(androidManifest))
+                writer.write(this)
+                writer.close()
+            }
+        } else {
+            val content = """
+                    <meta-data
+                        android:name="DL_APPID"
+                        android:value="$pkId" />
+                    <meta-data
+                        android:name="DL_PLAT_ID"
+                        android:value="4" />
+                </application>
+            """.trimIndent()
+            manifest = manifest.replace("</application>", content)
+            androidManifest.writeText(manifest)
         }
+    }
+
+    /**
+     * 配置大蓝劲飞 VIP SDK 所需的 Res Value 资源
+     */
+    fun setVipResValue(decompileDir: String) {
+        val attrs = """
+                <declare-styleable name="RoundedWebView">
+                    <attr format="dimension" name="corner_radius"/>
+                </declare-styleable>
+            </resources>
+        """.trimIndent()
+        val colors = """
+                <color name="dlhm_main_color">#21AAEE</color>
+                <color name="dlhm_permission_bg_color">#9926A9ED</color>
+                <color name="dlhm_permission_button_color">#FF21AAEE</color>
+                <color name="dlhm_progress_bar_center_color">#9925ABEE</color>
+                <color name="dlhm_progress_bar_end_color">#FF25ABEE</color>
+            </resources>
+        """.trimIndent()
+        val strings = """
+                <string name="dlhm_cancel">取消</string>
+                <string name="dlhm_change_icon">更换图片</string>
+                <string name="dlhm_choose_photo">图库选取</string>
+                <string name="dlhm_device_no_relation_app">该设备没有相关应用</string>
+                <string name="dlhm_float_close_hint_text">拖到此处关闭悬浮窗\n摇动手机可显示悬浮窗</string>
+                <string name="dlhm_float_open_hint_text">松开关闭悬浮窗\n摇动手机可显示悬浮窗</string>
+                <string name="dlhm_no_apk_parser">未能在该设备找到安装包解析器</string>
+                <string name="dlhm_no_call_app">未能在该设备找到拨号应用</string>
+                <string name="dlhm_take_photo">拍照</string>
+                <string name="dlhm_vip_save_album">已截图保存至相册</string>
+                <string name="dlhm_webview_content_load_fail">内容加载失败，点击重试</string>
+                <string name="dlhm_webview_content_loading">内容加载中...</string>
+            </resources>
+        """.trimIndent()
+        val styles = """
+                <style name="sdk_simple_dialog" parent="@android:style/Theme.Holo.Light.Dialog">
+                    <item name="android:windowFrame">@android:color/transparent</item>
+                    <item name="android:windowIsFloating">true</item>
+                    <item name="android:windowIsTranslucent">true</item>
+                    <item name="android:windowNoTitle">true</item>
+                    <item name="android:windowBackground">@android:color/transparent</item>
+                    <item name="android:backgroundDimEnabled">false</item>
+                </style>
+            </resources>
+        """.trimIndent()
+        val valuesDir = File(decompileDir + File.separator + "res" + File.separator + "values")
+        val attrsFile = File(valuesDir, "attrs.xml")
+        val colorsFile = File(valuesDir, "colors.xml")
+        val stringsFile = File(valuesDir, "strings.xml")
+        val stylesFile = File(valuesDir, "styles.xml")
+        if (attrsFile.exists()) {   // SDK 本身不包含 attrs.xml 文件，因此需要判断是否存在
+            attrsFile.writeText(attrsFile.readText().replace("</resources>", attrs))
+        } else {
+            attrsFile.createNewFile()
+            attrsFile.writeText("""<?xml version="1.0" encoding="utf-8"?><resources>$attrs""")
+        }
+        colorsFile.writeText(colorsFile.readText().replace("</resources>", colors))
+        stringsFile.writeText(stringsFile.readText().replace("</resources>", strings))
+        stylesFile.writeText(stylesFile.readText().replace("</resources>", styles))
     }
 
     /**
@@ -395,6 +470,374 @@ object AndroidXmlHandler {
         val writer = XMLWriter(FileWriter(file))
         writer.write(document)
         writer.close()
+    }
+
+    /**
+     * 华为联运的 AndroidManifest 设置
+     * @param appId agconnect-services.json 文件里的 AppId
+     */
+    fun setHuaweiManifest(decompileDir: String, packageName: String, appId: String) {
+        val content = """
+                <provider
+                    android:name="com.huawei.agconnect.core.provider.AGConnectInitializeProvider"
+                    android:authorities="$packageName.AGCInitializeProvider"
+                    android:exported="false" />
+                <service
+                    android:name="com.huawei.agconnect.core.ServiceDiscovery"
+                    android:exported="false" />
+                <meta-data
+                    android:name="availableLoaded"
+                    android:value="yes" />
+                <provider
+                    android:name="com.huawei.hms.update.provider.UpdateProvider"
+                    android:authorities="$packageName.hms.update.provider"
+                    android:exported="false"
+                    android:grantUriPermissions="true" />
+                <provider
+                    android:name="com.huawei.hms.device.provider.CheckHmsProvider"
+                    android:authorities="$packageName.hms.device.validate.spoofprovider"
+                    android:exported="false"
+                    android:grantUriPermissions="false" />
+                <activity
+                    android:name="com.huawei.hms.hwid.internal.ui.activity.HwIdSignInHubActivity"
+                    android:configChanges="fontScale|uiMode"
+                    android:excludeFromRecents="true"
+                    android:exported="false"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+                <activity
+                    android:name="com.huawei.hms.account.internal.ui.activity.AccountSignInHubActivity"
+                    android:excludeFromRecents="true"
+                    android:exported="false"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+                <activity
+                    android:name="com.huawei.hms.activity.BridgeActivity"
+                    android:configChanges="orientation|locale|layoutDirection|fontScale|screenSize|smallestScreenSize|screenLayout|uiMode"
+                    android:excludeFromRecents="true"
+                    android:exported="false"
+                    android:hardwareAccelerated="true"
+                    android:screenOrientation="behind"
+                    android:theme="@style/Base_Translucent" >
+                    <meta-data
+                        android:name="hwc-theme"
+                        android:value="androidhwext:style/Theme.Emui.Translucent" />
+                </activity>
+                <activity
+                    android:name="com.huawei.hms.activity.EnableServiceActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize|screenLayout"
+                    android:exported="false" />
+                <activity
+                    android:name="com.huawei.updatesdk.service.otaupdate.AppUpdateActivity"
+                    android:configChanges="orientation|screenSize"
+                    android:exported="false"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+                    <meta-data
+                        android:name="hwc-theme"
+                        android:value="androidhwext:style/Theme.Emui.Translucent.NoTitleBar" />
+                    <meta-data
+                        android:name="hnc-theme"
+                        android:value="androidhnext:style/Theme.Magic.Translucent.NoTitleBar" />
+                </activity>
+                <activity
+                    android:name="com.huawei.updatesdk.support.pm.PackageInstallerActivity"
+                    android:configChanges="orientation|keyboardHidden|screenSize"
+                    android:exported="false"
+                    android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+                    <meta-data
+                        android:name="hwc-theme"
+                        android:value="androidhwext:style/Theme.Emui.Translucent" />
+                    <meta-data
+                        android:name="hnc-theme"
+                        android:value="androidhnext:style/Theme.Magic.Translucent" />
+                </activity>
+                <provider
+                    android:name="com.huawei.updatesdk.fileprovider.UpdateSdkFileProvider"
+                    android:authorities="$packageName.updateSdk.fileProvider"
+                    android:exported="false"
+                    android:grantUriPermissions="true" />
+                <service
+                    android:name="com.huawei.agconnect.core.ServiceDiscovery"
+                    android:exported="false" >
+                    <meta-data
+                        android:name="com.huawei.agconnect.credential.CredentialServiceRegistrar:100"
+                        android:value="com.huawei.agconnect.core.ServiceRegistrar" />
+                </service>
+                <service
+                    android:name="com.huawei.hms.jos.games.service.GameService"
+                    android:exported="true" >
+                    <intent-filter>
+                        <action android:name="com.huawei.hms.games.service" />
+                    </intent-filter>
+                </service>
+                <provider
+                    android:name="com.huawei.hms.jos.games.archive.ArchiveRemoteAccessProvider"
+                    android:authorities="$packageName.hmssdk.jos.archive"
+                    android:exported="true" />
+                <activity
+                    android:name="com.huawei.appmarket.component.buoycircle.impl.delegete.BuoyBridgeActivity"
+                    android:configChanges="orientation|locale|screenSize|layoutDirection|fontScale"
+                    android:excludeFromRecents="true"
+                    android:exported="false"
+                    android:hardwareAccelerated="true"
+                    android:theme="@android:style/Theme.Translucent" >
+                    <meta-data
+                        android:name="hwc-theme"
+                        android:value="androidhwext:style/Theme.Emui.Translucent" />
+                </activity>
+                <receiver
+                    android:name="com.huawei.hms.analytics.receiver.HiAnalyticsSvcEvtReceiver"
+                    android:exported="false" >
+                    <intent-filter>
+                        <action android:name="com.huawei.hms.analytics.pps.event" />
+                    </intent-filter>
+                </receiver>
+                <provider
+                    android:name="com.huawei.hms.analytics.provider.AnalyticsInitializeProvider"
+                    android:authorities="$packageName.AnalyticsKitInitializeProvider"
+                    android:exported="false" />
+                <provider
+                    android:name="com.huawei.hms.aaid.InitProvider"
+                    android:authorities="$packageName.aaidinitprovider"
+                    android:exported="false"
+                    android:initOrder="500" />
+                <meta-data
+                    android:name="com.huawei.hms.client.channel.androidMarket"
+                    android:value="false" />
+                <meta-data
+                    android:name="com.huawei.hms.client.service.name:hwid"
+                    android:value="hwid:6.3.0.300" />
+                <meta-data
+                    android:name="com.huawei.hms.client.service.name:base"
+                    android:value="base:6.3.0.300" />
+                <meta-data
+                    android:name="com.huawei.hms.client.service.name:game"
+                    android:value="game:6.1.0.301" />
+                <meta-data
+                    android:name="com.huawei.hms.client.service.name:iap"
+                    android:value="iap:6.2.0.300" />
+                <meta-data
+                    android:name="com.huawei.hms.client.service.name:opendevice"
+                    android:value="opendevice:5.1.1.306" />
+                <meta-data
+                    android:name="com.huawei.hms.client.service.name:hianalytics"
+                    android:value="hianalytics:6.3.2.300" />
+                <meta-data
+                    android:name="com.huawei.hms.min_api_level:hianalytics:hianalytics"
+                    android:value="1" />
+                <meta-data
+                    android:name="com.huawei.hms.min_api_level:opendevice:push"
+                    android:value="1" />
+                <meta-data
+                    android:name="com.huawei.hms.min_api_level:hwid:hwid"
+                    android:value="1" />
+                <meta-data
+                    android:name="com.huawei.hms.min_api_level:hwid:account"
+                    android:value="13" />
+                <meta-data
+                    android:name="com.huawei.hms.min_api_level:base:hmscore"
+                    android:value="1" />
+                <meta-data
+                    android:name="componentverify_ag_cbg_root"
+                    android:value="@string/ag_sdk_cbg_root" />
+                <meta-data
+                    android:name="com.huawei.hms.jos.versioncode"
+                    android:value="60100301" />
+                <meta-data
+                    android:name="com.huawei.hms.client.appid"
+                    android:value="appid=$appId" />
+            </application>
+            <queries>
+                <intent>
+                    <action android:name="com.apptouch.intent.action.update_hms" />
+                </intent>
+                <intent>
+                    <action android:name="com.huawei.appmarket.intent.action.AppDetail" />
+                </intent>
+                <intent>
+                    <action android:name="com.huawei.hms.core.aidlservice" />
+                </intent>
+                <intent>
+                    <action android:name="com.huawei.hms.core" />
+                </intent>
+                <package android:name="com.hisilicon.android.hiRMService" />
+            </queries>
+            <meta-data
+                android:name="com.huawei.hms.min_api_level:apptouch:apptouch"
+                android:value="1" />
+            <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+            <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"/>
+            <uses-permission android:name="com.huawei.hwid.permission.gameservice.archive.access.provider" />
+            <uses-permission android:name="com.huawei.appmarket.service.commondata.permission.GET_COMMON_DATA" />
+        """.trimIndent()
+        val file = File(decompileDir, "AndroidManifest.xml")
+        replaceXmlEndTag(file, "</application>", content)
+        removeSdkSplashActivity(file)
+    }
+
+    /**
+     * 华为联运资源配置
+     */
+    fun setHuaweiResValue(decompileDir: String) {
+        val strings = """
+                <string name="ag_sdk_cbg_root">MIIFZDCCA0ygAwIBAgIIYsLLTehAXpYwDQYJKoZIhvcNAQELBQAwUDELMAkGA1UE
+                BhMCQ04xDzANBgNVBAoMBkh1YXdlaTETMBEGA1UECwwKSHVhd2VpIENCRzEbMBkG
+                A1UEAwwSSHVhd2VpIENCRyBSb290IENBMB4XDTE3MDgyMTEwNTYyN1oXDTQyMDgx
+                NTEwNTYyN1owUDELMAkGA1UEBhMCQ04xDzANBgNVBAoMBkh1YXdlaTETMBEGA1UE
+                CwwKSHVhd2VpIENCRzEbMBkGA1UEAwwSSHVhd2VpIENCRyBSb290IENBMIICIjAN
+                BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1OyKm3Ig/6eibB7Uz2o93UqGk2M7
+                84WdfF8mvffvu218d61G5M3Px54E3kefUTk5Ky1ywHvw7Rp9KDuYv7ktaHkk+yr5
+                9Ihseu3a7iM/C6SnMSGt+LfB/Bcob9Abw95EigXQ4yQddX9hbNrin3AwZw8wMjEI
+                SYYDo5GuYDL0NbAiYg2Y5GpfYIqRzoi6GqDz+evLrsl20kJeCEPgJZN4Jg00Iq9k
+                ++EKOZ5Jc/Zx22ZUgKpdwKABkvzshEgG6WWUPB+gosOiLv++inu/9blDpEzQZhjZ
+                9WVHpURHDK1YlCvubVAMhDpnbqNHZ0AxlPletdoyugrH/OLKl5inhMXNj3Re7Hl8
+                WsBWLUKp6sXFf0dvSFzqnr2jkhicS+K2IYZnjghC9cOBRO8fnkonh0EBt0evjUIK
+                r5ClbCKioBX8JU+d4ldtWOpp2FlxeFTLreDJ5ZBU4//bQpTwYMt7gwMK+MO5Wtok
+                Ux3UF98Z6GdUgbl6nBjBe82c7oIQXhHGHPnURQO7DDPgyVnNOnTPIkmiHJh/e3vk
+                VhiZNHFCCLTip6GoJVrLxwb9i4q+d0thw4doxVJ5NB9OfDMV64/ybJgpf7m3Ld2y
+                E0gsf1prrRlDFDXjlYyqqpf1l9Y0u3ctXo7UpXMgbyDEpUQhq3a7txZQO/17luTD
+                oA6Tz1ADavvBwHkCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQF
+                MAMBAf8wHQYDVR0OBBYEFKrE03lH6G4ja+/wqWwicz16GWmhMA0GCSqGSIb3DQEB
+                CwUAA4ICAQC1d3TMB+VHZdGrWJbfaBShFNiCTN/MceSHOpzBn6JumQP4N7mxCOwd
+                RSsGKQxV2NPH7LTXWNhUvUw5Sek96FWx/+Oa7jsj3WNAVtmS3zKpCQ5iGb08WIRO
+                cFnx3oUQ5rcO8r/lUk7Q2cN0E+rF4xsdQrH9k2cd3kAXZXBjfxfKPJTdPy1XnZR/
+                h8H5EwEK5DWjSzK1wKd3G/Fxdm3E23pcr4FZgdYdOlFSiqW2TJ3Qe6lF4GOKOOyd
+                WHkpu54ieTsqoYcuMKnKMjT2SLNNgv9Gu5ipaG8Olz6g9C7Htp943lmK/1Vtnhgg
+                pL3rDTsFX/+ehk7OtxuNzRMD9lXUtEfok7f8XB0dcL4ZjnEhDmp5QZqC1kMubHQt
+                QnTauEiv0YkSGOwJAUZpK1PIff5GgxXYfaHfBC6Op4q02ppl5Q3URl7XIjYLjvs9
+                t4S9xPe8tb6416V2fe1dZ62vOXMMKHkZjVihh+IceYpJYHuyfKoYJyahLOQXZykG
+                K5iPAEEtq3HPfMVF43RKHOwfhrAH5KwelUA/0EkcR4Gzth1MKEqojdnYNemkkSy7
+                aNPPT4LEm5R7sV6vG1CjwbgvQrWCgc4nMb8ngdfnVF7Ydqjqi9SAqUzIk4+Uf0ZY
+                +6RY5IcHdCaiPaWIE1xURQ8B0DRUURsQwXdjZhgLN/DKJpCl5aCCxg==</string>
+                <string name="c_buoycircle_auto_hide_notice" priority="translator">"拖到此处隐藏"</string>
+                <string name="c_buoycircle_cancel" priority="translator">"取消"</string>
+                <string name="c_buoycircle_confirm" priority="translator">"知道了"</string>
+                <string name="c_buoycircle_floatwindow_click_fail_toast" priority="translator">"请尝试打开“手机管家”或“设置”，开启华为应用市场的 “关联启动” 权限，并重试。"</string>
+                <string name="c_buoycircle_hide_guide_btn_cancel" priority="translator">"取消"</string>
+                <string name="c_buoycircle_hide_guide_btn_confirm" priority="translator">"隐藏"</string>
+                <string name="c_buoycircle_hide_guide_content_nosensor" priority="translator">"浮标隐藏后，重启应用可重新显示浮标。是否隐藏？"</string>
+                <string name="c_buoycircle_hide_guide_content_sensor" priority="translator">"浮标隐藏后，翻转设备可重新显示浮标。是否隐藏？"</string>
+                <string name="c_buoycircle_hide_guide_noremind" priority="translator">"不再提示"</string>
+                <string name="c_buoycircle_hide_guide_title" priority="translator">"隐藏浮标"</string>
+                <string name="c_buoycircle_install" priority="translator">"安装"</string>
+                <string name="hms_game_achievement_finish_notice" priority="translator">"%1${'$'}s 已解锁"</string>
+                <string name="hms_game_check_update_failed_content" priority="translator">"访问失败。该服务需安装应用助手最新版本才可使用。"</string>
+                <string name="hms_game_check_update_success_content" priority="translator">"要使用该服务，需安装以下应用的最新版本：\n\n·应用助手(%1${'$'}s MB)"</string>
+                <string name="hms_game_login_notice" priority="LT">"欢迎，华为用户 %1${'$'}s"</string>
+                <string name="hwid_huawei_login_button_text" priority="translator">华为帐号登录</string>
+                <string name="push_cat_body" translatable="false">99A9343CEC0A64112FD2496EF752F719</string>
+                <string name="push_cat_head" translatable="false">767499AE5B2DFC9D873AF46032E13B00</string>
+                <string name="hms_abort" priority="translator">"终止"</string>
+                <string name="hms_abort_message" priority="translator">"是否终止下载？"</string>
+                <string name="hms_bindfaildlg_message" priority="LT">"%1${'$'}s无法正常使用 HMS Core。请尝试打开“手机管家”或“设置”，开启%2${'$'}s的所有权限 (“自启动”、“关联启动”等)，并重试。"</string>
+                <string name="hms_cancel" priority="translator">"取消"</string>
+                <string name="hms_cancel_after_cancel" priority="translator">"取消安装"</string>
+                <string name="hms_cancel_install_message" priority="translator">"取消安装可能无法正常使用该应用。"</string>
+                <string name="hms_check_failure" priority="translator">"检查 HMS Core 更新失败。"</string>
+                <string name="hms_checking" priority="LT">"正在检测新版本..."</string>
+                <string name="hms_confirm" priority="translator">"知道了"</string>
+                <string name="hms_download_failure" priority="translator">"下载 HMS Core 安装包失败。"</string>
+                <string name="hms_download_no_space" priority="translator">"剩余空间不足，无法下载。"</string>
+                <string name="hms_download_retry" priority="translator">"下载 HMS Core 失败。是否重试？"</string>
+                <string name="hms_downloading_loading" priority="LT">"正在加载"</string>
+                <string name="hms_install" priority="translator">"安装"</string>
+                <string name="hms_install_after_cancel" priority="translator">"立即安装"</string>
+                <string name="hms_install_message" priority="translator">"您尚未安装 HMS Core，安装之后才可用此功能。是否安装？"</string>
+                <string name="hms_is_spoof" priority="translator">"本设备安装的 (%1${'$'}s) 为非法 HMS Core 版本。请先进入系统设置的应用管理中卸载该版本，然后回到本应用安装合法的 HMS Core 版本。"</string>
+                <string name="hms_retry" priority="translator">"重试"</string>
+                <string name="hms_spoof_hints" priority="translator">"提示"</string>
+                <string name="hms_update" priority="translator">"更新"</string>
+                <string name="hms_update_continue" priority="translator">"继续下载"</string>
+                <string name="hms_update_message" priority="translator">"HMS Core 版本太旧，更新到最新版本才可用此功能。是否更新？"</string>
+                <string name="hms_update_message_new" priority="LT">"该服务需安装以下应用的最新版本才能使用：\n\n·%1${'$'}s"</string>
+                <string name="hms_update_nettype" priority="translator">"当前为非 Wi-Fi 网络。是否继续下载？"</string>
+                <string name="hms_update_title" priority="translator">"HMS Core"</string>
+                <string name="upsdk_app_download_info_new" priority="LT">"安装"</string>
+                <string name="upsdk_app_download_installing" priority="translator">"正在下载 %s"</string>
+                <string name="upsdk_app_size" priority="LT">"大小"</string>
+                <string name="upsdk_app_version" priority="LT">"版本"</string>
+                <string name="upsdk_appstore_install" priority="translator">"需要使用 %s 才能升级。是否现在安装？"</string>
+                <string name="upsdk_cancel" priority="LT">"取消"</string>
+                <string name="upsdk_checking_update_prompt" priority="LT">"正在检查更新..."</string>
+                <string name="upsdk_choice_update" priority="LT">"有可用更新，快去升级吧。"</string>
+                <string name="upsdk_detail" priority="LT">"详情"</string>
+                <string name="upsdk_getting_message_fail_prompt_toast" priority="translator">"无法获取信息，请稍后重试"</string>
+                <string name="upsdk_mobile_dld_warn" priority="translator">"当前使用移动数据网络，立即安装将消耗 %1${'$'}s 数据流量。"</string>
+                <string name="upsdk_no_available_network_prompt_toast" priority="translator">"网络未连接，请检查网络设置"</string>
+                <string name="upsdk_ota_app_name" priority="translator">"应用"</string>
+                <string name="upsdk_ota_cancel" priority="LT">"以后再说"</string>
+                <string name="upsdk_ota_force_cancel_new" priority="translator">"退出应用"</string>
+                <string name="upsdk_ota_notify_updatebtn" priority="LT">"立即更新"</string>
+                <string name="upsdk_ota_title" priority="LT">"发现新版本"</string>
+                <string name="upsdk_storage_utils" priority="translator">"%1${'$'}s MB"</string>
+                <string name="upsdk_third_app_dl_cancel_download_prompt_ex" priority="translator">"是否取消安装？"</string>
+                <string name="upsdk_third_app_dl_install_failed" priority="translator">"安装失败"</string>
+                <string name="upsdk_third_app_dl_sure_cancel_download" priority="translator">"确认"</string>
+                <string name="upsdk_update_check_no_new_version" priority="LT">"已是最新版本"</string>
+            </resources>
+        """.trimIndent()
+        val colors = """
+                <color name="hwid_auth_button_color_black">#000000</color>
+                <color name="hwid_auth_button_color_border">#CCCCCC</color>
+                <color name="hwid_auth_button_color_gray">#F2F2F2</color>
+                <color name="hwid_auth_button_color_red">#EF484B</color>
+                <color name="hwid_auth_button_color_text_black">#000000</color>
+                <color name="hwid_auth_button_color_text_white">#FFFFFF</color>
+                <color name="hwid_auth_button_color_white">#FFFFFF</color>
+                <color name="upsdk_color_gray_1">#F2F2F2</color>
+                <color name="upsdk_color_gray_10">#191919</color>
+                <color name="upsdk_color_gray_7">#808080</color>
+            </resources>
+        """.trimIndent()
+        val attrs = """
+                <declare-styleable name="HuaweiIdAuthButton">
+                    <attr format="enum" name="hwid_color_policy">
+                        <enum name="hwid_color_policy_red" value="0"/>
+                        <enum name="hwid_color_policy_white" value="1"/>
+                        <enum name="hwid_color_policy_white_with_border" value="2"/>
+                        <enum name="hwid_color_policy_black" value="3"/>
+                        <enum name="hwid_color_policy_gray" value="4"/>
+                    </attr>
+                    <attr format="enum" name="hwid_button_theme">
+                        <enum name="hwid_button_theme_no_title" value="0"/>
+                        <enum name="hwid_button_theme_full_title" value="1"/>
+                    </attr>
+                    <attr format="dimension" name="hwid_corner_radius">
+                        <enum name="hwid_corner_radius_large" value="-1"/>
+                        <enum name="hwid_corner_radius_medium" value="-2"/>
+                        <enum name="hwid_corner_radius_small" value="-3"/>
+                    </attr>
+                </declare-styleable>
+            </resources>
+        """.trimIndent()
+        val styles = """
+                <style name="Base_Translucent" parent="@android:style/Theme.Translucent">
+                    <item name="android:windowNoTitle">true</item>
+                </style>
+            </resources>
+        """.trimIndent()
+        val dimens = """
+                <dimen name="upsdk_margin_l">16dp</dimen>
+                <dimen name="upsdk_margin_m">8dp</dimen>
+                <dimen name="upsdk_margin_xs">2dp</dimen>
+                <dimen name="upsdk_master_body_2">13sp</dimen>
+                <dimen name="upsdk_master_subtitle">15sp</dimen>
+            </resources>
+        """.trimIndent()
+        val resValuesFolder = File(decompileDir + File.separator + "res" + File.separator + "values")
+        val stringsFile = File(resValuesFolder, "strings.xml")
+        val stylesFile = File(resValuesFolder, "styles.xml")
+        val colorsFile = File(resValuesFolder, "colors.xml")
+        val attrsFile = File(resValuesFolder, "attrs.xml")
+        val dimensFile = File(resValuesFolder, "dimens.xml")
+        if (attrsFile.exists()) {   // SDK 本身不包含 attrs.xml 文件，因此需要判断是否存在
+            attrsFile.writeText(attrsFile.readText().replace("</resources>", attrs))
+        } else {
+            attrsFile.createNewFile()
+            attrsFile.writeText("""<?xml version="1.0" encoding="utf-8"?><resources>$attrs""")
+        }
+        colorsFile.writeText(colorsFile.readText().replace("</resources>", colors))
+        stringsFile.writeText(stringsFile.readText().replace("</resources>", strings))
+        stylesFile.writeText(stylesFile.readText().replace("</resources>", styles))
+        dimensFile.writeText(dimensFile.readText().replace("</resources>", dimens))
     }
 
     /**

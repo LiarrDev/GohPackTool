@@ -47,6 +47,8 @@ fun main(vararg args: String) {
     val qqLoginPatch = args[27]             // QQ 登录注入文件
     val wxLoginPatch = args[28]             // 微信登录注入文件
 
+    val jfVipPatch = args[29]               // 劲飞 VIP SDK 注入文件
+
     println(
         """
             ═════════════════════════════════════════════════════════════════╗
@@ -85,13 +87,15 @@ fun main(vararg args: String) {
             qqLoginPatch = $qqLoginPatch
             wxLoginPatch = $wxLoginPatch
             
+            jfVipPatch = $jfVipPatch
+            
             ═════════════════════════════════════════════════════════════════╝
     """.trimIndent()
     )
 
-    // 3.2.1.8 接入大蓝 VIP SDK
-    if (sdkVersion.versionOlderThan("3.2.1.8") && channelTag != ChannelTag.NO_SDK.tag) {    // 原包可以跳过此判断
-        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.1.8，不能自动出包")
+    // 3.2.2.0 移除大蓝 VIP SDK
+    if (sdkVersion.versionOlderThan("3.2.2.0") && channelTag != ChannelTag.NO_SDK.tag) {    // 原包可以跳过此判断
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.2.0，不能自动出包")
         return
     }
 
@@ -119,7 +123,7 @@ fun main(vararg args: String) {
         )
         channelConfig(channelTag, channelAppId, channelAppName)
         setPackType(packType)
-        vipSdkConfig()
+        patchVipSdk(jfVipPatch)
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
         }

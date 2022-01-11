@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.jar.Manifest
 import java.util.regex.Pattern
 
 /**
@@ -20,16 +21,16 @@ abstract class Game(private val apk: String) {
     private lateinit var gameName: String
     private lateinit var packageName: String
     private lateinit var pkId: String
+    private lateinit var manifestFile: File
     private var loginType = "0"
 
     /**
      * 反编译
      */
     fun decompile(decompileDir: String, apktool: String): Boolean {
-
         this.decompileDir = decompileDir
         this.apktool = apktool
-
+        this.manifestFile = File(decompileDir, "AndroidManifest.xml")
         return CommandUtil.decompile(apk, decompileDir, apktool)
     }
 
@@ -126,8 +127,7 @@ abstract class Game(private val apk: String) {
      */
     fun setPackageName(packageName: String) {
         this.packageName = packageName
-        val file = File(decompileDir + File.separator + "AndroidManifest.xml")
-        var manifest = file.readText()
+        var manifest = manifestFile.readText()
         val packageMatcher = Pattern.compile("package=\"(.*?)\"").matcher(manifest)
         packageMatcher.find()
         val oldPackageName = packageMatcher.group(1)
@@ -141,7 +141,7 @@ abstract class Game(private val apk: String) {
 
         manifest = manifest.replace("android:name=\"\\.", "android:name=\"$oldPackageName\\.")
 
-        file.writeText(manifest)
+        manifestFile.writeText(manifest)
 
 //        // 由于有研发将包名定为 Application 所在包，原方法会导致游戏不能正常运行出错，出包最好提供包名给研发，现改成遍历替换，效率可能会降低
 //        val file = File(decompileDir + File.separator + "AndroidManifest.xml")
@@ -186,22 +186,17 @@ abstract class Game(private val apk: String) {
      * 当游戏做了分 Dex 处理，且 SDK 不在首个 Dex 中，需要重写该方法
      */
     open fun patchChannelFile(patchFile: String) {
-        if (patchFile.isBlank()) {
-            println("$patchFile File path is empty")
-            return
-        }
-        File(patchFile).getDirectoryList().forEach {    // FIXME: 因为接入了大蓝的 VIP SDK，所以用到的模块最好都放到第一个 smali 避免冲突
-            when (it.name) {
-                "assets",
-                "smali",
-                "smali_classes2",
-                "res" -> File(patchFile, it.name).copyDirTo(File(decompileDir, it.name))
-                "lib", "so", "jni" -> FileUtil.copySoLib(     // FIXME: 有些渠道对该文件夹命名不一，后面要统一
-                    patchFile + File.separator + it.name,
-                    decompileDir + File.separator + "lib"
-                )
-            }
-        }
+        FileUtil.patchPlugin(decompileDir, patchFile)
+    }
+
+
+    /**
+     * 注入劲飞 VIP SDK，联运渠道不需要注入
+     */
+    open fun patchVipSdk(patchFile: String) {
+        FileUtil.patchPlugin(decompileDir, patchFile)
+        AndroidXmlHandler.setVipAppId(manifestFile, pkId)
+        AndroidXmlHandler.setVipResValue(decompileDir)
     }
 
     /**
@@ -271,9 +266,19 @@ abstract class Game(private val apk: String) {
             }
             ChannelTag.BAIDU.tag -> {
                 AndroidXmlHandler.setBaiduOCPCManifest(decompileDir, packageName)
-                AndroidXmlHandler.setManifestNameSpace(File(decompileDir, "AndroidManifest.xml"))
+                AndroidXmlHandler.setManifestNameSpace(manifestFile)
             }
             ChannelTag.GDT.tag -> AndroidXmlHandler.setGdtManifest(decompileDir, packageName)
+            ChannelTag.HUAWEI.tag -> {
+                AndroidXmlHandler.setHuaweiManifest(decompileDir, packageName, channelAppId)
+                AndroidXmlHandler.setHuaweiResValue(decompileDir)
+            }
+            ChannelTag.VIVO.tag -> {
+                AndroidXmlHandler.setVivoManifest(decompileDir, channelAppId)
+                FileUtil.deleteOriginPayMethod(decompileDir)
+                PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
+                    .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
+            }
             else -> map["appId"] = channelAppId
         }
 
@@ -310,9 +315,9 @@ abstract class Game(private val apk: String) {
     /**
      * 劲飞 VIP SDK 配置
      */
+    @Deprecated("需注入文件")
     fun vipSdkConfig() {
-        val file = File(decompileDir, "AndroidManifest.xml")
-        AndroidXmlHandler.setVipAppId(file, pkId)
+        AndroidXmlHandler.setVipAppId(manifestFile, pkId)
     }
 
     /**
