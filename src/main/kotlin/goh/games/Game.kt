@@ -272,12 +272,19 @@ abstract class Game(private val apk: String) {
             ChannelTag.HUAWEI.tag -> {
                 AndroidXmlHandler.setHuaweiManifest(decompileDir, packageName, channelAppId)
                 AndroidXmlHandler.setHuaweiResValue(decompileDir)
+                PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
+                    .setProperties(mapOf("skip_phone_permission" to "1"))
             }
             ChannelTag.VIVO.tag -> {
                 AndroidXmlHandler.setVivoManifest(decompileDir, channelAppId)
                 FileUtil.deleteOriginPayMethod(decompileDir)
                 PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
-                    .setProperties(mapOf("open_delay" to "1"))      // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
+                    .setProperties(
+                        mapOf(
+                            "open_delay" to "1",        // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
+                            "skip_phone_permission" to "1"  // 跳过强制权限申请
+                        )
+                    )
             }
             else -> map["appId"] = channelAppId
         }
