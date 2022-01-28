@@ -93,9 +93,9 @@ fun main(vararg args: String) {
     """.trimIndent()
     )
 
-    // 3.2.2.0 移除大蓝 VIP SDK
-    if (sdkVersion.versionOlderThan("3.2.2.0") && channelTag != ChannelTag.NO_SDK.tag) {    // 原包可以跳过此判断
-        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.2.0，不能自动出包")
+    // 3.2.2.1 重构了闪屏页
+    if (sdkVersion.versionOlderThan("3.2.2.1") && channelTag != ChannelTag.NO_SDK.tag) {    // 原包可以跳过此判断
+        println("当前 SDK 版本：V$sdkVersion，低于 V3.2.2.1，不能自动出包")
         return
     }
 
