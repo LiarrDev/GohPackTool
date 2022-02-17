@@ -103,7 +103,8 @@ fun main(vararg args: String) {
                     mapOf(
                         "mi_app_id" to channelAppId,
                         "mi_app_key" to channelAppKey,
-                        "show_permission_guideline" to "1"      // 小米渠道要求用户同意后才申请权限
+                        "show_permission_guideline" to "1",     // 小米渠道要求用户同意后才申请权限
+                        "skip_phone_permission" to "1"          // 跳过强制权限申请
                     )
                 )
         }
