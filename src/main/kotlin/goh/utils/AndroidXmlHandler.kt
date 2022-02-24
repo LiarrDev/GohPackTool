@@ -937,7 +937,7 @@ object AndroidXmlHandler {
         """.trimIndent()
         val file = File(decompileDir, "AndroidManifest.xml")
         replaceXmlEndTag(file, "</application>", content)
-        removeSdkSplashActivity(file)
+//        removeSdkSplashActivity(file)
     }
 
     /**
@@ -973,7 +973,7 @@ object AndroidXmlHandler {
         """.trimIndent()
         val file = File(decompileDir, "AndroidManifest.xml")
         replaceXmlEndTag(file, "</application>", content)
-        removeSdkSplashActivity(file)
+//        removeSdkSplashActivity(file)
     }
 
     /**
