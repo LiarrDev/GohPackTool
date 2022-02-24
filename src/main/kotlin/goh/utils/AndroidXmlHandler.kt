@@ -951,7 +951,7 @@ object AndroidXmlHandler {
                     android:value="$appId" />
                 <meta-data
                     android:name="vivo_union_sdk"
-                    android:value="4.6.9.0" />
+                    android:value="4.7.2.0" />
                 <activity
                     android:name="com.vivo.unionsdk.ui.UnionActivity"
                     android:configChanges="orientation|keyboardHidden|navigation|screenSize"
