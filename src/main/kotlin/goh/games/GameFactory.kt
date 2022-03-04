@@ -34,6 +34,7 @@ class GameFactory(private val apk: String) {
             "152" -> Game152(apk)
             "153" -> Game153(apk)
             "154" -> Game154(apk)
+            "155" -> Game155(apk)
             else -> null
         }
     }
