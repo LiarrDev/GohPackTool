@@ -282,7 +282,8 @@ abstract class Game(private val apk: String) {
                     .setProperties(
                         mapOf(
                             "open_delay" to "1",        // 根据广告来源回传到不同的 AID，但广告来源需要到登录后才能拿到，所以此处用于对初始化延迟上报
-                            "skip_phone_permission" to "1"  // 跳过强制权限申请
+                            "skip_phone_permission" to "1",     // 跳过强制权限申请
+                            "remove_permissions" to "1"         // 移除所有权限申请
                         )
                     )
             }
