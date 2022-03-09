@@ -1,15 +1,12 @@
 package goh.channels
 
-import goh.games.*
-import goh.utils.*
+import goh.games.GameFactory
+import goh.utils.versionOlderThan
 import java.io.File
 import java.time.LocalDateTime
 
-/**
- * VIVO 联运打包脚本
- */
 fun main(vararg args: String) {
-    println("ViVO 联运打包任务开始...")
+    println("字节联运打包任务开始...")
     println("打包时间：${LocalDateTime.now()}")
 
     val apk = args[0]                       // 母包 Apk 路径
@@ -32,10 +29,10 @@ fun main(vararg args: String) {
     val splashImg = args[15]                // 闪屏路径
 
     val packType = args[16]                 // 母包类型，和后台打包配置 ID 一致
-    val channelAppId = args[17]             // ViVO AppId
+    val channelAppId = args[17]             // 字节联运 AppId
     val channelFile = args[18]              // 渠道注入文件路径
-    val channelTag = ChannelTag.VIVO.tag    // 渠道标记，10：ViVO
-    val channelAbbr = "ViVO"                // 渠道简称
+    val channelTag = ChannelTag.GBSDK.tag   // 渠道标记，14：字节联运
+    val channelAbbr = "GbSDK"               // 渠道简称
 
     println(
         """
@@ -86,8 +83,8 @@ fun main(vararg args: String) {
                 pkName
             }
         )
-        setPackageName(packageName)
-        gameConfig(sdkVersion, pkId, "4")
+        setPackageName (packageName)
+        gameConfig(sdkVersion, pkId, "176")
         patchChannelFile(channelFile)
         channelConfig(channelTag, channelAppId, "")
         setPackType(packType)

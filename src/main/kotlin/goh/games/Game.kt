@@ -287,6 +287,18 @@ abstract class Game(private val apk: String) {
                         )
                     )
             }
+            ChannelTag.GBSDK.tag -> {
+                AndroidXmlHandler.setGbSdkManifest(decompileDir, packageName)
+                AndroidXmlHandler.setGbSdkConfigJson(decompileDir, channelAppId)
+                AndroidXmlHandler.setGbSdkResValue(decompileDir)
+                PropertiesUtil(File(decompileDir + File.separator + "assets" + File.separator + "ZSmultil"))
+                    .setProperties(
+                        mapOf(
+                            "skip_phone_permission" to "1",     // 跳过强制权限申请
+                            "remove_permissions" to "1"         // 移除所有权限申请
+                        )
+                    )
+            }
             else -> map["appId"] = channelAppId
         }
 
