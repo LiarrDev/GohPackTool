@@ -43,6 +43,7 @@ abstract class Game(private val apk: String) {
      * 替换应用图标
      */
     fun replaceIcon(icon: String): Boolean {
+        AndroidXmlHandler.removeRoundIcon(manifestFile)
         if (icon.isBlank()) {
             return true
         }

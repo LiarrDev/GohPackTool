@@ -44,6 +44,20 @@ object AndroidXmlHandler {
     }
 
     /**
+     * 移除 android:roundIcon 属性
+     */
+    fun removeRoundIcon(androidManifest: File) {
+        val document = SAXReader().read(androidManifest)
+        val application = document.rootElement.element("application")
+        val attr = application.attribute("roundIcon") ?: return
+        application.remove(attr)
+        val writer = XMLWriter(FileWriter(androidManifest))
+        writer.write(document)
+        writer.close()
+        println("移除 android:roundIcon 属性")
+    }
+
+    /**
      * 获取 SDK 版本号
      */
     fun getSdkVersion(decompileDir: String): String {
