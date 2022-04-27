@@ -20,6 +20,6 @@ class Game158(apk: String) : Game(apk) {
         appVersion: String,
         channelAbbr: String
     ): Boolean {
-        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "jmxy")
+        return generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr, "xysg")
     }
 }
