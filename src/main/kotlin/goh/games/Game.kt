@@ -200,7 +200,6 @@ abstract class Game(private val apk: String) {
         FileUtil.patchPlugin(decompileDir, patchFile)
     }
 
-
     /**
      * 第三方登录
      * 普通买量渠道接入，联运渠道不可使用
