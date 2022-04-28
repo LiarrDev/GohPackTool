@@ -112,6 +112,7 @@ fun main(vararg args: String) {
         )
         setPackageName(packageName)
         gameConfig(sdkVersion, pkId)
+        patchVipSdk(jfVipPatch)
         patchChannelFile(channelFile)
         thirdPartyLogin(
             loginType,
@@ -134,7 +135,6 @@ fun main(vararg args: String) {
                 )
         }
         setPackType(packType)
-        patchVipSdk(jfVipPatch)
         if (generateSignedApk(keyStorePath, generatePath, gid, appVersion, channelAbbr)) {
             deleteDecompileDir()
         }

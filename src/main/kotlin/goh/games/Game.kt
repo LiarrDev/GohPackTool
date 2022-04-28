@@ -183,6 +183,16 @@ abstract class Game(private val apk: String) {
     }
 
     /**
+     * 注入劲飞 VIP SDK，联运渠道不需要注入
+     * NOTE: 该方法需在注入渠道文件前执行，因为注入渠道时可能会对文件移动做处理
+     */
+    open fun patchVipSdk(patchFile: String) {
+        FileUtil.patchPlugin(decompileDir, patchFile)
+        AndroidXmlHandler.setVipAppId(manifestFile, pkId)
+        AndroidXmlHandler.setVipResValue(decompileDir)
+    }
+
+    /**
      * 注入渠道文件
      * 当游戏做了分 Dex 处理，且 SDK 不在首个 Dex 中，需要重写该方法
      */
@@ -190,15 +200,6 @@ abstract class Game(private val apk: String) {
         FileUtil.patchPlugin(decompileDir, patchFile)
     }
 
-
-    /**
-     * 注入劲飞 VIP SDK，联运渠道不需要注入
-     */
-    open fun patchVipSdk(patchFile: String) {
-        FileUtil.patchPlugin(decompileDir, patchFile)
-        AndroidXmlHandler.setVipAppId(manifestFile, pkId)
-        AndroidXmlHandler.setVipResValue(decompileDir)
-    }
 
     /**
      * 第三方登录

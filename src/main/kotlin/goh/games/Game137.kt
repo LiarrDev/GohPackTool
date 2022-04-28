@@ -43,7 +43,10 @@ class Game137(apk: String) : Game(apk) {
             when (it.name) {
                 "assets", "res" -> File(patchFile, it.name).copyDirTo(File(decompileDir, it.name))
                 "smali", "smali_classes2" -> File(patchFile, it.name).copyDirTo(File(decompileDir, "smali_classes2"))
-                "so" -> FileUtil.copySoLib(patchFile + File.separator + "so", decompileDir + File.separator + "lib")
+                "so", "lib", "jni" -> FileUtil.copySoLib(
+                    patchFile + File.separator + it.name,
+                    decompileDir + File.separator + "lib"
+                )
             }
         }
     }

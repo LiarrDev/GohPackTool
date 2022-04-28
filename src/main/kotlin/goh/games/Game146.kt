@@ -21,14 +21,17 @@ class Game146(apk: String) : Game(apk) {
      */
     override fun patchChannelFile(patchFile: String) {
         if (patchFile.isBlank()) {
-            println("$patchFile File path is empty")
+            println("Channel File path is empty")
             return
         }
         File(patchFile).getDirectoryList().forEach {
             when (it.name) {
                 "assets", "res" -> File(patchFile, it.name).copyDirTo(File(decompileDir, it.name))
                 "smali", "smali_classes2" -> File(patchFile, it.name).copyDirTo(File(decompileDir, "smali_classes2"))
-                "so" -> FileUtil.copySoLib(patchFile + File.separator + "so", decompileDir + File.separator + "lib")
+                "so", "lib", "jni" -> FileUtil.copySoLib(
+                    patchFile + File.separator + it.name,
+                    decompileDir + File.separator + "lib"
+                )
             }
         }
     }
